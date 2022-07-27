@@ -11,9 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const menu = document.querySelector('.menu')
   const span = document.getElementsByClassName('close')[0]
   const scoreDisplay = document.querySelector('.score-display')
+  const linesDisplay = document.querySelector('.lines-score')
   let currentRotation = 0
   const width = 10
   let score = 0
+  let lines = 0
   let timerId
   let nextRandom = 0
   const colors = [
@@ -36,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // set base of grid
     for (let i = 0; i < GRID_WIDTH; i++) {
       let gridElement = document.createElement("div")
-      gridElement.setAttribute("class", "block3")
+      gridElement.setAttribute("class", "blockBase")
       grid.appendChild(gridElement)
     }
 
@@ -140,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     undraw()
     const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1)
     if (!isAtRightEdge) currentPosition += 1
-    if (current.some(index => squares[currentPosition + index].classList.contains('block2'))) {
+    if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
       currentPosition -= 1
     }
     draw()
@@ -151,18 +153,19 @@ document.addEventListener('DOMContentLoaded', () => {
     undraw()
     const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0)
     if (!isAtLeftEdge) currentPosition -= 1
-    if (current.some(index => squares[currentPosition + index].classList.contains('block2'))) {
+    if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
       currentPosition += 1
     }
     draw()
   }
 
+ 
   //freeze the shape
   function freeze() {
     // if block has settled
-    if (current.some(index => squares[currentPosition + index + width].classList.contains('block3') || squares[currentPosition + index + width].classList.contains('block2'))) {
-      // make it block2
-      current.forEach(index => squares[index + currentPosition].classList.add('block2'))
+    if (current.some(index => squares[currentPosition + index + width].classList.contains('blockBase') || squares[currentPosition + index + width].classList.contains('settledBlock'))) {
+      // make it settledBlock
+      current.forEach(index => squares[index + currentPosition].classList.add('settledBlock'))
       // start a new tetromino falling
       random = nextRandom
       nextRandom = Math.floor(Math.random() * theTetrominoes.length)
@@ -174,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gameOver()
     }
   }
+  
   freeze()
 
 
@@ -246,11 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < 199; i +=width) {
       const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
 
-      if(row.every(index => squares[index].classList.contains('block2'))) {
+      if(row.every(index => squares[index].classList.contains('settledBlock'))) {
         score +=10
+        lines += 1
         scoreDisplay.innerHTML = score
+        linesDisplay.innerHTML = lines
         row.forEach(index => {
-          squares[index].classList.remove('block2')
+          squares[index].classList.remove('settledBlock')
           squares[index].classList.remove('tetromino')
           squares[index].style.backgroundColor = ''
         })
@@ -263,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
    //Game Over
    function gameOver() {
-    if (current.some(index => squares[currentPosition + index].classList.contains('block2'))) {
+    if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
       // scoreDisplay.innerHTML = 'end'
       clearInterval(timerId)
     }
@@ -281,5 +287,15 @@ document.addEventListener('DOMContentLoaded', () => {
       displayShape()
     }
   })
+
+  // adds an event listener to the document that listens for key presses
+document.addEventListener("keyup", function(e) {
+  // if desired key pressed, pause 
+  // Replace Escape with the key you want to execute the pause function
+    if (e.key === 32) {
+      pause();
+  // else do nothing
+     } else {}
+  });
 
 })
