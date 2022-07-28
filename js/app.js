@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let lines = 0
   let timerId
   let nextRandom = 0
+  let request
   const colors = [
     'orange',
     'red',
@@ -132,9 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
   //move down on loop
   function moveDown() {
     undraw()
-    currentPosition = currentPosition += width
+    currentPosition += width
     draw()
     freeze()
+    
+    request = requestAnimationFrame(moveDown)
+    
   }
 
   //move right and prevent collisions with shapes moving left
@@ -282,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
       timerId = null
     } else {
       draw()
-      timerId = setInterval(moveDown, 1000)
+      timerId = requestAnimationFrame(moveDown)
       nextRandom = Math.floor(Math.random() * theTetrominoes.length)
       displayShape()
     }
@@ -295,7 +299,41 @@ document.addEventListener("keyup", function(e) {
     if (e.key === 32) {
       pause();
   // else do nothing
-     } else {}
+     } else {
+
+     }
   });
+
+// let secondsPassed;
+// let oldTimeStamp;
+// let fps;
+
+// function that displays fps of performance
+// function displayFPS() {
+//   const newTimeStamp = performance.now();
+//   const delta = newTimeStamp - oldTimeStamp;
+//   oldTimeStamp = newTimeStamp;
+//   fps = 1000 / delta;
+//   fpsDisplay.innerHTML = fps.toFixed(2);
+//   }
+
+//   displayFPS()
+  
+const times = [];
+let fps;
+
+function refreshLoop() {
+  window.requestAnimationFrame(() => {
+    const now = performance.now();
+    while (times.length > 0 && times[0] <= now - 1000) {
+      times.shift();
+    }
+    times.push(now);
+    fps = times.length;
+    refreshLoop();
+  });
+}
+
+refreshLoop();
 
 })
