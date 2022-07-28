@@ -1,24 +1,46 @@
-// a function that delays another function running for 3 seconds
+// find missing numbers in array
+function findMissingNumbers(arr) {
+  result = 0;
 
-  function delay(callback, ms) {
-    let timer = 0
-    let called = false
-    return function() {
-      if (called) {
-        clearTimeout(timer)
-        called = false
-        callback()
-      } else {
-        clearTimeout(timer)
-       timer = setTimeout(() => {
-         called = true
-         callback()
-       }, ms)
-     }
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] < arr[i + 1]) {
+      for (let j = arr[i]; j <= arr[i + 1]; j++) {
+        if (arr[j] === arr[i]) {
+          break;
+        } else {
+          result = result + 1;
+        }
+      }
+      return result;
     }
   }
+}
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)) 
-sleep(3000).then(() => console.log('You can use the delay function'))
-// }
-// }
+function solution(statues) {
+  statues.forEach((value, index) => {
+    statues.forEach((value2, index2) => {
+      if (value != value2) {
+        if (value < value2) {
+          let a = (b = 0);
+          a = statues[index];
+          b = statues[index2];
+          statues[index] = b;
+          statues[index2] = a;
+        }
+      }
+    });
+  });
+  let start = undefined;
+  let result = 0;
+  for (let i = 0; i < statues.length; i++) {
+    if (statues[i+1] - statues[i] > 1) {
+        result += statues[i+1] - statues[i] - 1;
+    }
+  }
+  return result;
+}
+
+let test = [7, 1, 5, 3, 9];
+
+console.log(solution(test));
+// console.log(findMissingNumbers(test))
