@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'blue'
   ]
 
-
   function createGrid() {
     // the main grid
     let grid = document.querySelector(".grid")
@@ -53,17 +52,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return grid;
   }
 
-
   //assign functions to keycodes
   function control(e) {
-    if (e.keyCode === 39)
-      moveright()
-    else if (e.keyCode === 38)
+    if (e.keyCode === 40) {
+      if (e.repeat) {
+        moveDownQuick()
+      } else {
+        moveDown()
+      }
+    }
+    if (e.keyCode === 39) {
+      moveRight()
+    }
+    if (e.keyCode === 38) {
       rotate()
-    else if (e.keyCode === 37)
-      moveleft()
-    else if (e.keyCode === 40)
-      moveDown()
+    }
+    if (e.keyCode === 37) {
+      MoveLeft()
+    }
   }
 
   // the classical behavior is to speed up the block if down button is kept pressed so doing that
@@ -112,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let current = theTetrominoes[random][currentRotation]
 
 
-  //move the Tetromino moveDown
+  //move the Tetromino moveDown 4, indicates the block falling down from the middle at the top
   let currentPosition = 4
   //draw the shape
   function draw() {
@@ -130,30 +136,47 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
+  let num = 0
   //move down on loop
   function moveDown() {
+    num += 1
+    if (num === 25) {
+      num = 0
+      undraw()
+      currentPosition += width
+      draw()
+      freeze()
+    }
+    request = requestAnimationFrame(moveDown)
+  }
+
+  //moveDownQuick when down arrow is pressed
+  function moveDownQuick() {
     undraw()
-    currentPosition += width
+    if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
+     
+      currentPosition += width
+    }
     draw()
     freeze()
-    
-    request = requestAnimationFrame(moveDown)
-    
+    request = requestAnimationFrame(moveDownQuick)
   }
 
   //move right and prevent collisions with shapes moving left
-  function moveright() {
+  function moveRight() {
     undraw()
     const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1)
+    console.log("INDEX:", squares[currentPosition])
     if (!isAtRightEdge) currentPosition += 1
     if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
+    
       currentPosition -= 1
     }
     draw()
   }
 
   //move left and prevent collisions with shapes moving right
-  function moveleft() {
+  function MoveLeft() {
     undraw()
     const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0)
     if (!isAtLeftEdge) currentPosition -= 1
@@ -163,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     draw()
   }
 
- 
+
   //freeze the shape
   function freeze() {
     // if block has settled
@@ -181,32 +204,32 @@ document.addEventListener('DOMContentLoaded', () => {
       gameOver()
     }
   }
-  
+
   freeze()
 
 
 
   //FIX ROTATION OF TETROMINOS AT THE EDGE 
   function isAtRight() {
-    return current.some(index=> (currentPosition + index + 1) % width === 0)  
+    return current.some(index => (currentPosition + index + 1) % width === 0)
   }
-  
+
   function isAtLeft() {
-    return current.some(index=> (currentPosition + index) % width === 0)
+    return current.some(index => (currentPosition + index) % width === 0)
   }
-  
-  function checkRotatedPosition(P){
+
+  function checkRotatedPosition(P) {
     P = P || currentPosition       //get current position.  Then, check if the piece is near the left side.
-    if ((P+1) % width < 4) {         //add 1 because the position index can be 1 less than where the piece is (with how they are indexed).     
-      if (isAtRight()){            //use actual position to check if it's flipped over to right side
+    if ((P + 1) % width < 4) {         //add 1 because the position index can be 1 less than where the piece is (with how they are indexed).     
+      if (isAtRight()) {            //use actual position to check if it's flipped over to right side
         currentPosition += 1    //if so, add one to wrap it back around
         checkRotatedPosition(P) //check again.  Pass position from start, since long block might need to move more.
-        }
+      }
     }
     else if (P % width > 5) {
-      if (isAtLeft()){
+      if (isAtLeft()) {
         currentPosition -= 1
-      checkRotatedPosition(P)
+        checkRotatedPosition(P)
       }
     }
   }
@@ -223,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     draw()
   }
 
- 
+
 
   //show up-next tetromino in mini-grid display
   const displaySquares = document.querySelectorAll('.mini-grid div')
@@ -249,13 +272,13 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-   //add score
-   function addScore() {
-    for (let i = 0; i < 199; i +=width) {
-      const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
+  //add score
+  function addScore() {
+    for (let i = 0; i < 199; i += width) {
+      const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9]
 
-      if(row.every(index => squares[index].classList.contains('settledBlock'))) {
-        score +=10
+      if (row.every(index => squares[index].classList.contains('settledBlock'))) {
+        score += 10
         lines += 1
         scoreDisplay.innerHTML = score
         linesDisplay.innerHTML = lines
@@ -271,18 +294,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-   //Game Over
-   function gameOver() {
+  //Game Over
+  function gameOver() {
     if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
       // scoreDisplay.innerHTML = 'end'
-      clearInterval(timerId)
+      cancelAnimationFrame(timerId)
     }
   }
 
   //start the game
   startBtn.addEventListener('click', () => {
     if (timerId) {
-      clearInterval(timerId)
+      cancelAnimationFrame(timerId)
       timerId = null
     } else {
       draw()
@@ -293,47 +316,47 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   // adds an event listener to the document that listens for key presses
-document.addEventListener("keyup", function(e) {
-  // if desired key pressed, pause 
-  // Replace Escape with the key you want to execute the pause function
+  document.addEventListener("keyup", function (e) {
+    // if desired key pressed, pause 
+    // Replace Escape with the key you want to execute the pause function
     if (e.key === 32) {
       pause();
-  // else do nothing
-     } else {
+      // else do nothing
+    } else {
 
-     }
-  });
-
-// let secondsPassed;
-// let oldTimeStamp;
-// let fps;
-
-// function that displays fps of performance
-// function displayFPS() {
-//   const newTimeStamp = performance.now();
-//   const delta = newTimeStamp - oldTimeStamp;
-//   oldTimeStamp = newTimeStamp;
-//   fps = 1000 / delta;
-//   fpsDisplay.innerHTML = fps.toFixed(2);
-//   }
-
-//   displayFPS()
-  
-const times = [];
-let fps;
-
-function refreshLoop() {
-  window.requestAnimationFrame(() => {
-    const now = performance.now();
-    while (times.length > 0 && times[0] <= now - 1000) {
-      times.shift();
     }
-    times.push(now);
-    fps = times.length;
-    refreshLoop();
   });
-}
 
-refreshLoop();
+  // let secondsPassed;
+  // let oldTimeStamp;
+  // let fps;
+
+  // function that displays fps of performance
+  // function displayFPS() {
+  //   const newTimeStamp = performance.now();
+  //   const delta = newTimeStamp - oldTimeStamp;
+  //   oldTimeStamp = newTimeStamp;
+  //   fps = 1000 / delta;
+  //   fpsDisplay.innerHTML = fps.toFixed(2);
+  //   }
+
+  //   displayFPS()
+
+  const times = [];
+  let fps;
+
+  function refreshLoop() {
+    window.requestAnimationFrame(() => {
+      const now = performance.now();
+      while (times.length > 0 && times[0] <= now - 1000) {
+        times.shift();
+      }
+      times.push(now);
+      fps = times.length;
+      refreshLoop();
+    });
+  }
+
+  refreshLoop();
 
 })
