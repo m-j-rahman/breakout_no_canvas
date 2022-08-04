@@ -1,15 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   // TODO: we can also get the grid size from user
-  const GRID_WIDTH = 10
-  const GRID_HEIGHT = 20
-  const GRID_SIZE = GRID_WIDTH * GRID_HEIGHT
+  const gridWidth = 10
+  const gridHeight = 20
+  const gridSize = gridWidth * gridHeight
 
   // no need to type 200 divs :)
   const grid = createGrid();
   let squares = Array.from(grid.querySelectorAll('div'))
   const startBtn = document.querySelector('.button')
-  const menu = document.querySelector('.menu')
-  const span = document.getElementsByClassName('close')[0]
+  // const menu = document.querySelector('.menu')
+  // const span = document.getElementsByClassName('close')[0]
   const scoreDisplay = document.querySelector('.score-display')
   const linesDisplay = document.querySelector('.lines-score')
   let currentRotation = 0
@@ -18,25 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let lines = 0
   let timerId
   let nextRandom = 0
-  let request
-  const colors = [
-    'orange',
-    'red',
-    'purple',
-    'green',
-    'blue'
-  ]
+  // let request
+  const colors = ['orange', 'red', 'purple', 'green', 'blue']
 
   function createGrid() {
     // the main grid
     let grid = document.querySelector(".grid")
-    for (let i = 0; i < GRID_SIZE; i++) {
+    for (let i = 0; i < gridSize; i++) {
       let gridElement = document.createElement("div")
       grid.appendChild(gridElement)
     }
 
     // set base of grid
-    for (let i = 0; i < GRID_WIDTH; i++) {
+    for (let i = 0; i < gridWidth; i++) {
       let gridElement = document.createElement("div")
       gridElement.setAttribute("class", "blockBase")
       grid.appendChild(gridElement)
@@ -55,9 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
   //assign functions to keycodes
   function control(e) {
     if (e.keyCode === 40) {
-      if (e.repeat) {
+      let isKeyHeldDown = e.repeat
+      console.log(isKeyHeldDown)
+      if (isKeyHeldDown) {
         moveDownQuick()
       } else {
+        console.log(isKeyHeldDown)
         moveDown()
       }
     }
@@ -77,38 +74,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //The Tetrominoes
   const lTetromino = [
-    [1, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1, 2],
-    [GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH * 2 + 2],
-    [1, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1, GRID_WIDTH * 2],
-    [GRID_WIDTH, GRID_WIDTH * 2, GRID_WIDTH * 2 + 1, GRID_WIDTH * 2 + 2]
+    [1, gridWidth + 1, gridWidth * 2 + 1, 2],
+    [gridWidth, gridWidth + 1, gridWidth + 2, gridWidth * 2 + 2],
+    [1, gridWidth + 1, gridWidth * 2 + 1, gridWidth * 2],
+    [gridWidth, gridWidth * 2, gridWidth * 2 + 1, gridWidth * 2 + 2]
   ]
 
   const zTetromino = [
-    [0, GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1],
-    [GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH * 2, GRID_WIDTH * 2 + 1],
-    [0, GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1],
-    [GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH * 2, GRID_WIDTH * 2 + 1]
+    [0, gridWidth, gridWidth + 1, gridWidth * 2 + 1],
+    [gridWidth + 1, gridWidth + 2, gridWidth * 2, gridWidth * 2 + 1],
+    [0, gridWidth, gridWidth + 1, gridWidth * 2 + 1],
+    [gridWidth + 1, gridWidth + 2, gridWidth * 2, gridWidth * 2 + 1]
   ]
 
   const tTetromino = [
-    [1, GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH + 2],
-    [1, GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH * 2 + 1],
-    [GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH * 2 + 1],
-    [1, GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1]
+    [1, gridWidth, gridWidth + 1, gridWidth + 2],
+    [1, gridWidth + 1, gridWidth + 2, gridWidth * 2 + 1],
+    [gridWidth, gridWidth + 1, gridWidth + 2, gridWidth * 2 + 1],
+    [1, gridWidth, gridWidth + 1, gridWidth * 2 + 1]
   ]
 
   const oTetromino = [
-    [0, 1, GRID_WIDTH, GRID_WIDTH + 1],
-    [0, 1, GRID_WIDTH, GRID_WIDTH + 1],
-    [0, 1, GRID_WIDTH, GRID_WIDTH + 1],
-    [0, 1, GRID_WIDTH, GRID_WIDTH + 1]
+    [0, 1, gridWidth, gridWidth + 1],
+    [0, 1, gridWidth, gridWidth + 1],
+    [0, 1, gridWidth, gridWidth + 1],
+    [0, 1, gridWidth, gridWidth + 1]
   ]
 
   const iTetromino = [
-    [1, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1, GRID_WIDTH * 3 + 1],
-    [GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH + 3],
-    [1, GRID_WIDTH + 1, GRID_WIDTH * 2 + 1, GRID_WIDTH * 3 + 1],
-    [GRID_WIDTH, GRID_WIDTH + 1, GRID_WIDTH + 2, GRID_WIDTH + 3]
+    [1, gridWidth + 1, gridWidth * 2 + 1, gridWidth * 3 + 1],
+    [gridWidth, gridWidth + 1, gridWidth + 2, gridWidth + 3],
+    [1, gridWidth + 1, gridWidth * 2 + 1, gridWidth * 3 + 1],
+    [gridWidth, gridWidth + 1, gridWidth + 2, gridWidth + 3]
   ]
 
   const theTetrominoes = [lTetromino, zTetromino, tTetromino, oTetromino, iTetromino]
@@ -116,9 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
   //Randomly Select Tetromino
   let random = Math.floor(Math.random() * theTetrominoes.length)
   let current = theTetrominoes[random][currentRotation]
+  let selectedBlock
+  for (let i = 0; i < current.length; i++) {
+    selectedBlock = current[i]
+    console.log(selectedBlock)
+  }
+  
 
-
-  //move the Tetromino moveDown 4, indicates the block falling down from the middle at the top
+  //move the Tetromino moveDown 4, indicates the block falling down from the centre at the top of the grid
   let currentPosition = 4
   //draw the shape
   function draw() {
@@ -150,15 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
     request = requestAnimationFrame(moveDown)
   }
 
-  //moveDownQuick when down arrow is pressed
+  // moveDownQuick when down arrow is pressed
   function moveDownQuick() {
-    undraw()
-    if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
-     
+    // console.log(current)
+    // if (selectedBlock(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
+      undraw()
       currentPosition += width
-    }
-    draw()
-    freeze()
+      draw()
+      freeze()
+    // }
+
     request = requestAnimationFrame(moveDownQuick)
   }
 
@@ -166,10 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function moveRight() {
     undraw()
     const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1)
-    console.log("INDEX:", squares[currentPosition])
+    // console.log("INDEX:", squares[currentPosition])
     if (!isAtRightEdge) currentPosition += 1
     if (current.some(index => squares[currentPosition + index].classList.contains('settledBlock'))) {
-    
+
       currentPosition -= 1
     }
     draw()
@@ -185,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     draw()
   }
-
 
   //freeze the shape
   function freeze() {
@@ -206,8 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   freeze()
-
-
 
   //FIX ROTATION OF TETROMINOS AT THE EDGE 
   function isAtRight() {
@@ -245,8 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkRotatedPosition()
     draw()
   }
-
-
 
   //show up-next tetromino in mini-grid display
   const displaySquares = document.querySelectorAll('.mini-grid div')
@@ -342,21 +340,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //   displayFPS()
 
-  const times = [];
-  let fps;
+  // const times = [];
+  // let fps;
 
-  function refreshLoop() {
-    window.requestAnimationFrame(() => {
-      const now = performance.now();
-      while (times.length > 0 && times[0] <= now - 1000) {
-        times.shift();
-      }
-      times.push(now);
-      fps = times.length;
-      refreshLoop();
-    });
-  }
+  // function refreshLoop() {
+  //   window.requestAnimationFrame(() => {
+  //     const now = performance.now();
+  //     while (times.length > 0 && times[0] <= now - 1000) {
+  //       times.shift();
+  //     }
+  //     times.push(now);
+  //     fps = times.length;
+  //     refreshLoop();
+  //   });
+  // }
 
-  refreshLoop();
+  // refreshLoop();
 
 })
