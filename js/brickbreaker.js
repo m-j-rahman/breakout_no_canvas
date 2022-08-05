@@ -16,6 +16,7 @@ const ballStart = [270, 40]
 let ballCurrentPosition = ballStart
 
 let timerId
+let resetUser
 let score = 0
 let lives = 3
 
@@ -72,23 +73,33 @@ ball.classList.add('ball')
 grid.appendChild(ball)
 drawBall()
 
+let shouldUserReset = false
 //move user
 function moveUser(e) {
-    switch (e.key) {
-        case 'ArrowLeft':
-            if (currentPosition[0] > 0) {
-                currentPosition[0] -= 10
-                drawUser()
-            }
-            break
-        case 'ArrowRight':
-            if (currentPosition[0] < (boardWidth - blockWidth)) {
-                currentPosition[0] += 10
-                drawUser()
-            }
-            break
+    if (shouldUserReset === true) {
+        currentPosition[0] = userStart[0]
+        drawUser()
+    } else {
+        switch (e.key) {
+            case 'ArrowLeft':
+                if (currentPosition[0] > 0) {
+                    currentPosition[0] -= 10
+                    drawUser()
+                    resetUser = window.requestAnimationFrame(moveUser)
+                }
+                break
+            case 'ArrowRight':
+                if (currentPosition[0] < (boardWidth - blockWidth)) {
+                    currentPosition[0] += 10
+                    drawUser()
+                    resetUser = window.requestAnimationFrame(moveUser)
+                }
+                break
+        }
+        resetUser = window.requestAnimationFrame(moveUser)
     }
 }
+resetUser = window.requestAnimationFrame(moveUser)
 document.addEventListener('keydown', moveUser)
 
 //draw User
@@ -104,72 +115,69 @@ function drawBall() {
 }
 
 //move ball
-timerId = window.requestAnimationFrame(function () {
-    function moveBall() {
+let shouldBallStop = false
+function moveBall() {
+    if (shouldBallStop === false) {
         ballCurrentPosition[0] += xDirection
         ballCurrentPosition[1] += yDirection
         drawBall()
         checkForCollisions()
         timerId = window.requestAnimationFrame(moveBall)
     }
-    timerId = window.requestAnimationFrame(moveBall)
+}
+timerId = window.requestAnimationFrame(moveBall)
 
-    //check for collisions
-    function checkForCollisions() {
-        //check for block collision
-        for (let i = 0; i < blocks.length; i++) {
-            if
-                (
-                (ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) &&
-                ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])
-            ) {
-                const allBlocks = Array.from(document.querySelectorAll('.block'))
-                allBlocks[i].classList.remove('block')
-                blocks.splice(i, 1)
-                changeDirection()
-                score++
-                scoreDisplay.innerHTML = "Score: " + score
-                if (blocks.length == 0) {
-                    scoreDisplay.innerHTML = 'You Win!'
-                    window.cancelAnimationFrame(timerId)
-                    document.removeEventListener('keydown', moveUser)
-                }
-            }
-        }
-        // check for wall hits
-        if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
-            changeDirection()
-        }
-
-        //check for user collision
+//check for collisions
+function checkForCollisions() {
+    //check for block collision
+    for (let i = 0; i < blocks.length; i++) {
         if
             (
-            (ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) &&
-            (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)
+            (ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) &&
+            ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])
         ) {
+            const allBlocks = Array.from(document.querySelectorAll('.block'))
+            allBlocks[i].classList.remove('block')
+            blocks.splice(i, 1)
             changeDirection()
-        }
-
-        //game over
-        for (let i = lives; i > 0; i--){
-
-            if (ballCurrentPosition[1] <= 0) {
-    
-                lives--
-                livesDisplay.innerHTML = "Lives: " + lives
-                document.removeEventListener('keydown', moveUser)
+            score++
+            scoreDisplay.innerHTML = "Score: " + score
+            if (blocks.length == 0) {
+                scoreDisplay.innerHTML = 'You Win!'
                 window.cancelAnimationFrame(timerId)
-                moveBall()
-                if (lives === 0) {
-                    scoreDisplay.innerHTML = 'You lose!'
-                    document.removeEventListener('keydown', moveUser)
-                    window.cancelAnimationFrame(timerId)
-                }
+                document.removeEventListener('keydown', moveUser)
             }
         }
     }
-});
+    // check for wall hits
+    if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
+        changeDirection()
+    }
 
+    //check for user collision
+    if
+        (
+        (ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) &&
+        (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)
+    ) {
+        changeDirection()
+    }
+
+    //game over
+    if (ballCurrentPosition[1] <= 0) {
+        lives--
+        livesDisplay.innerHTML = "Lives: " + lives
+        document.removeEventListener('keydown', moveUser)
+        shouldBallStop = true
+        shouldUserReset = true
+        if (lives === 0) {
+            scoreDisplay.innerHTML = 'You lose!'
+            document.removeEventListener('keydown', moveUser)
+            // shouldBallStop = true
+            // shouldUserReset = true
+        }
+    }
+}
 
 function changeDirection() {
     if (xDirection === 2 && yDirection === 2) {
