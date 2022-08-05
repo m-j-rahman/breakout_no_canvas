@@ -1,36 +1,29 @@
-.container {
-  display: flex;
-}
-
-
 .grid {
-  width: 200px;
-  height: 400px;
-  display: flex;
-  flex-wrap: wrap;
-  background-color: yellow;
+  position: absolute;
+  width: 560px;
+  height: 300px;
+  border: solid 1px black;
+  margin-top: 100px;
 }
 
-.grid div {
+.user {
+  position: absolute;
+  width: 100px;
   height: 20px;
-  width: 20px;
+  background-color: blueviolet;
 }
 
-.tetromino {
+.block {
+  position: absolute;
+  width: 100px;
+  height: 20px;
   background-color: blue;
 }
 
-
-.mini-grid {
-  margin-left: 200px;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  flex-wrap: wrap;
-  background-color: yellow;
-}
-
-.mini-grid div {
-  height: 20px;
+.ball {
+  position: absolute;
   width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: red;
 }

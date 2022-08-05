@@ -1,34 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tetris</title>
-  <script src="js/app.js" charset="utf-8"></script>
+  <meta charset="utf-8" />
+  <title>Brick Breaker</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
   <header>
-    <h1 class="fw-300 t-ucase">Tetris</h1>
-     <button class="button t-ucase" href="#">Start / Pause</button>
+    <h1 class="fw-300 t-ucase">Brick Breaker</h1>
+    <button class="button t-ucase" href="#">Start / Pause</button>
   </header>
-  <main class="game-area">
-    <section>
-      <div class="display">
-        <h1 class="score fw-400 t-ucase">Score: <span class="score-display t-ucase fw-300">0</span></h1>
-        <h2 class="lines-display fw-400 t-ucase">Lines: <span class="lines-score">0</span></h2>
-      </div>
-    </section>
-    <div class="next-shape">
-      <div class="mini-grid"></div>
-    </div>
-    <div class="game">
-      <div class="grid"></div>
-    </div>
-   
-  </main>
+  <h1 id="lives">Lives: 3</h1>
+  <h1 id="score">Score: 0</h1>
+  <div class="grid"></div>
+
+  <script src="js/brickbreaker.js"></script>
 </body>
 
 </html>
