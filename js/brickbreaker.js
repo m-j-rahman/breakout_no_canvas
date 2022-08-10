@@ -22,6 +22,7 @@ let lives = 3
 let pause = false
 let reset = false
 let playing = false
+let restart = false
 
 //my block
 class Block {
@@ -102,6 +103,26 @@ document.addEventListener('keydown', (event) => {
             document.getElementById('menu').style.display = 'none'
             document.addEventListener('keydown', moveUser)
         }
+        //restart game
+        function restart(e) {
+            if (e.key === 'r') {
+                restart = true
+                if (restart) {
+                    document.getElementById('menu').style.display = 'none'
+                    document.addEventListener('keydown', moveUser)
+                    currentPosition = [230, 10]
+                    ballCurrentPosition = [270, 40]
+                    drawUser()
+                    drawBall()
+                    checkForCollisions()
+                    timerUser = window.requestAnimationFrame(moveUser)
+                    timerBall = window.requestAnimationFrame(moveBall)
+                    restart = false
+                }
+            }
+        }
+        document.addEventListener('keydown', restart)
+
         //move user
         function moveUser(e) {
             switch (e.key) {
@@ -121,14 +142,19 @@ document.addEventListener('keydown', (event) => {
                     break
                 //pauses user
                 case 'p':
+                    console.log("playing", playing)
                     if (playing) {
                         pause = true
-                        playing = false
+                        // playing = false
                     }
                     if (pause) {
                         document.getElementById('menu').style.display = 'block'
                         document.removeEventListener('keydown', moveUser)
+                    } else {
+                        document.addEventListener('keydown', moveUser)
+                        playing = true
                     }
+                    break
             }
             timerUser = window.requestAnimationFrame(moveUser)
         }
@@ -140,7 +166,6 @@ document.addEventListener('keydown', (event) => {
             if (pause) {
                 window.cancelAnimationFrame(timerBall)
                 pause = false
-                playing = false
             } else {
                 if (reset === false) {
                     ballCurrentPosition[0] += xDirection
@@ -185,25 +210,19 @@ document.addEventListener('keydown', (event) => {
             if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
                 changeDirection()
             }
-
             //check for user collision
-            if
-                (
-                (ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) &&
-                (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)
-            ) {
+            if ((ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) && (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)) {
                 changeDirection()
             }
-
-            //game over
+            // lives and reset user
             if (ballCurrentPosition[1] <= 0) {
                 lives--
                 livesDisplay.innerHTML = "Lives: " + lives
                 currentPosition = [230, 10]
                 drawUser()
                 reset = true
-
             }
+            // game over
             if (lives === 0) {
                 scoreDisplay.innerHTML = 'You lose!'
                 document.removeEventListener('keydown', moveUser)
