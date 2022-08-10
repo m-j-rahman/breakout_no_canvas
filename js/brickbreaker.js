@@ -80,6 +80,7 @@ function addBlocks() {
         block.classList.add('block')
         block.style.left = blocks[i].bottomLeft[0] + 'px'
         block.style.bottom = blocks[i].bottomLeft[1] + 'px'
+        block.style.backgroundColor = generateRandomColor()
         grid.appendChild(block)
     }
 }
@@ -116,6 +117,14 @@ function drawBall() {
     ball.style.bottom = ballCurrentPosition[1] + 'px'
 }
 
+function generateRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
 document.addEventListener('keydown', (event) => {
     //starts game
     if (event.key === 's') {

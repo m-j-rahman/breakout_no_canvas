@@ -1,29 +1,46 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Brick Breaker</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <title>Brick Breaker</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
+  <body class = "bg2">
+    <div>
+    </div>
 
-<body>
-  <header>
-    <h1 class="fw-300 t-ucase">Brick Breaker</h1>
-  </header>
-  <h2 id="lives">Lives: 3</h2>
-  <h2 id="score">Score: 0</h2>
-  <h3>Press S to start the game</h3> 
-  <h3>Use the left and right arrow keys to move the paddle</h3> 
-  <div id="menu" class="menu">
-    <h3>Menu</h3> 
-    Press S to unpause
-    <br><br>
-    Press R to restart
-  </div>
-  <div class="grid"></div>
-  <script src="js/brickbreaker.js">
-  </script>
-</body>
+    <div class = "test" >
+      <header>
+        <h1 class="title">Brick Breaker</h1>
+      </header>
+      
+      <div id = "counters">
+        <h2 id="lives">Lives: 3</h2>
+        <h2 id="score">Score: 0</h2>
+      </div>
 
+      <div id="instruction">
+        <h3 id = "text" >- Press "S" to start the game</h3>
+        <h3 id = "text" >- Use <-- and --> to move the paddle</h3>
+      </div>
+
+      <div id="menu" class="menu">
+        <h3>Menu</h3>
+        Press S to unpause
+        <br /><br />
+        Press R to restart
+      </div>
+      <div class="grid"></div>
+
+    </div>
+    <div>
+
+    </div>
+
+    <script src="js/brickbreaker.js"></script>
+  </body>
 </html>
