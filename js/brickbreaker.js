@@ -1,7 +1,6 @@
 const grid = document.querySelector('.grid')
 const scoreDisplay = document.querySelector('#score')
 const livesDisplay = document.querySelector('#lives')
-const pauseMenu = document.querySelector('#menu')
 const blockWidth = 100
 const blockHeight = 20
 const ballDiameter = 20
@@ -16,13 +15,13 @@ let currentPosition = userStart
 const ballStart = [270, 40]
 let ballCurrentPosition = ballStart
 
-let timerId
-let resetUser
+let timerBall
+let timerUser
 let score = 0
 let lives = 3
+let pause = false
+let reset = false
 let playing = false
-let shouldUserReset = false
-let shouldBallPause = false
 
 //my block
 class Block {
@@ -95,15 +94,14 @@ function drawBall() {
     ball.style.bottom = ballCurrentPosition[1] + 'px'
 }
 
-//draw menu
-// function drawMenu() {
-//     document.getElementById('menu').style.left = 500
-//     document.getElementById('menu').style.bottom = 100
-// }
-
 document.addEventListener('keydown', (event) => {
     //starts game
     if (event.key === 's') {
+        playing = true
+        if (pause === false) {
+            document.getElementById('menu').style.display = 'none'
+            document.addEventListener('keydown', moveUser)
+        }
         //move user
         function moveUser(e) {
             switch (e.key) {
@@ -111,50 +109,55 @@ document.addEventListener('keydown', (event) => {
                     if (currentPosition[0] > 0) {
                         currentPosition[0] -= 10
                         drawUser()
-                        resetUser = window.requestAnimationFrame(moveUser)
+                        timerUser = window.requestAnimationFrame(moveUser)
                     }
                     break
                 case 'ArrowRight':
                     if (currentPosition[0] < (boardWidth - blockWidth)) {
                         currentPosition[0] += 10
                         drawUser()
-                        resetUser = window.requestAnimationFrame(moveUser)
+                        timerUser = window.requestAnimationFrame(moveUser)
                     }
                     break
-                    //pauses user
+                //pauses user
                 case 'p':
-                    console.log('pauseUser')
-                    shouldBallPause = true
-                    document.getElementById('menu').style.display = 'block'
-                    document.removeEventListener('keydown', moveUser)        
+                    if (playing) {
+                        pause = true
+                        playing = false
+                    }
+                    if (pause) {
+                        document.getElementById('menu').style.display = 'block'
+                        document.removeEventListener('keydown', moveUser)
+                    }
             }
-            resetUser = window.requestAnimationFrame(moveUser)
+            timerUser = window.requestAnimationFrame(moveUser)
         }
         document.addEventListener('keydown', moveUser)
 
         //move ball
-        let shouldBallReset = false
         function moveBall() {
-            if (shouldBallReset === false) {
-                ballCurrentPosition[0] += xDirection
-                ballCurrentPosition[1] += yDirection
-                drawBall()
-                checkForCollisions()
-                timerId = window.requestAnimationFrame(moveBall)
-            } else if (shouldBallReset === true) {
-                ballCurrentPosition = [270, 40]
-                shouldBallReset = false
-                drawBall()
-                checkForCollisions()
-                timerId = window.requestAnimationFrame(moveBall)
-            }
             //pauses ball
-            if (shouldBallPause) {
-                console.log('pauseBall')
-                window.cancelAnimationFrame(timerId)
+            if (pause) {
+                window.cancelAnimationFrame(timerBall)
+                pause = false
+                playing = false
+            } else {
+                if (reset === false) {
+                    ballCurrentPosition[0] += xDirection
+                    ballCurrentPosition[1] += yDirection
+                    drawBall()
+                    checkForCollisions()
+                    timerBall = window.requestAnimationFrame(moveBall)
+                } else if (reset === true) {
+                    ballCurrentPosition = [270, 40]
+                    reset = false
+                    drawBall()
+                    checkForCollisions()
+                    timerBall = window.requestAnimationFrame(moveBall)
+                }
             }
         }
-        timerId = window.requestAnimationFrame(moveBall)
+        timerBall = window.requestAnimationFrame(moveBall)
 
         //check for collisions
         function checkForCollisions() {
@@ -173,7 +176,7 @@ document.addEventListener('keydown', (event) => {
                     scoreDisplay.innerHTML = "Score: " + score
                     if (blocks.length == 0) {
                         scoreDisplay.innerHTML = 'You Win!'
-                        window.cancelAnimationFrame(timerId)
+                        window.cancelAnimationFrame(timerBall)
                         document.removeEventListener('keydown', moveUser)
                     }
                 }
@@ -198,13 +201,13 @@ document.addEventListener('keydown', (event) => {
                 livesDisplay.innerHTML = "Lives: " + lives
                 currentPosition = [230, 10]
                 drawUser()
-                shouldBallReset = true
+                reset = true
 
             }
             if (lives === 0) {
                 scoreDisplay.innerHTML = 'You lose!'
                 document.removeEventListener('keydown', moveUser)
-                shouldBallReset = true
+                reset = true
             }
         }
 
