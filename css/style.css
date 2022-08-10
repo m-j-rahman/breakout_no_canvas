@@ -2,22 +2,66 @@
   position: absolute;
   width: 560px;
   height: 300px;
-  border: solid 1px black;
+  border: solid 1px rgb(255, 255, 255);
   margin-top: 100px;
+}
+
+.block{
+  justify-content: center;
+}
+
+.bg2{
+display: grid;
+grid-template-columns: 33% 33% 33%;
+background-color: black;
+color: white;
+}
+
+#counters{
+  font-family: 'Press Start 2P', cursive;
+  justify-content: center;
+}
+
+
+#text{
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+}
+
+#lives{
+  font-family: 'Press Start 2P', cursive;
+}
+
+
+
+#score{
+  font-family: 'Press Start 2P', cursive;
+}
+.title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 40px;
+}
+
+.test{
+  /* display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column; */
+  text-align: center;
 }
 
 .user {
   position: absolute;
   width: 100px;
   height: 20px;
-  background-color: rgb(14, 243, 6);
+  background-color: rgb(255, 255, 255);
 }
 
 .block {
   position: absolute;
   width: 100px;
   height: 20px;
-  background-color: rgb(132, 0, 255);
+  background-color: rgb(219, 181, 255);
 }
 
 .ball {
@@ -25,22 +69,22 @@
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  background-color: rgb(255, 0, 76);
+  background-color: rgb(255, 255, 255);
 }
 
 .menu {
   display: none;
-  position: fixed;
-  background-color: rgb(25, 228, 228);
-  color: rgb(255, 0, 200);
+  position:fixed ;
+  background-color: rgb(99, 218, 2);
+  color: rgb(0, 0, 0);
   text-align: center;
   border-radius: 10px;
+  justify-content: center;
+  top: 37%;
+  right: 39.5%;
   padding: 10px 0;
   z-index: 2;
-  width: 200px;
-  height: 150px;
-  top: 40%;
-  right: 45%;
-  align-self: center;
-  margin: 0 auto;
+  width: 350px;
+  height: 200px;
+  font-family: 'Press Start 2P', cursive;
 }
