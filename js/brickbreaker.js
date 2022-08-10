@@ -35,7 +35,7 @@ class Block {
 }
 
 //all my blocks
-const blocks = [
+let blocks = [
     new Block(10, 270),
     new Block(120, 270),
     new Block(230, 270),
@@ -53,6 +53,26 @@ const blocks = [
     new Block(450, 210),
 ]
 
+
+let blocks2 = [
+    new Block(10, 270),
+    new Block(120, 270),
+    new Block(230, 270),
+    new Block(340, 270),
+    new Block(450, 270),
+    new Block(10, 240),
+    new Block(120, 240),
+    new Block(230, 240),
+    new Block(340, 240),
+    new Block(450, 240),
+    new Block(10, 210),
+    new Block(120, 210),
+    new Block(230, 210),
+    new Block(340, 210),
+    new Block(450, 210),
+]
+
+
 //draw my blocks
 function addBlocks() {
     for (let i = 0; i < blocks.length; i++) {
@@ -63,6 +83,7 @@ function addBlocks() {
         grid.appendChild(block)
     }
 }
+
 addBlocks()
 
 //add user
@@ -114,6 +135,12 @@ document.addEventListener('keydown', (event) => {
                     ballCurrentPosition = [270, 40]
                     drawUser()
                     drawBall()
+                    let allBlocks = Array.from(document.querySelectorAll('.block'))
+                    allBlocks.forEach(ele => {
+                        grid.removeChild(ele)
+                    })
+                    blocks = blocks2
+                    addBlocks()
                     checkForCollisions()
                     timerUser = window.requestAnimationFrame(moveUser)
                     timerBall = window.requestAnimationFrame(moveBall)
@@ -188,12 +215,8 @@ document.addEventListener('keydown', (event) => {
         function checkForCollisions() {
             //check for block collision
             for (let i = 0; i < blocks.length; i++) {
-                if
-                    (
-                    (ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) &&
-                    ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])
-                ) {
-                    const allBlocks = Array.from(document.querySelectorAll('.block'))
+                if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
+                    let allBlocks = Array.from(document.querySelectorAll('.block'))
                     allBlocks[i].classList.remove('block')
                     blocks.splice(i, 1)
                     changeDirection()

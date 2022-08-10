@@ -2,13 +2,14 @@ TO DO LIST
 
 - Add stopwatch when game starts
 - implement restart with R
-    - bricks added back
+    - bricks added back after restart is pressed twice, etc
     - lives reset
     - timer reset
 - sort collistions
 - win menu
 - make ball start movement random
 - add random colours to the bricks
+- speed up paddle
 
 Dev Tool/Performance tasks
 - no frame drops, FPS must stay at same number
