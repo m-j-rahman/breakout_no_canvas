@@ -10,14 +10,14 @@
   position: absolute;
   width: 100px;
   height: 20px;
-  background-color: blueviolet;
+  background-color: rgb(14, 243, 6);
 }
 
 .block {
   position: absolute;
   width: 100px;
   height: 20px;
-  background-color: blue;
+  background-color: rgb(132, 0, 255);
 }
 
 .ball {
@@ -25,5 +25,22 @@
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  background-color: red;
+  background-color: rgb(255, 0, 76);
+}
+
+.menu {
+  display: none;
+  position: fixed;
+  background-color: rgb(25, 228, 228);
+  color: rgb(255, 0, 200);
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px 0;
+  z-index: 2;
+  width: 200px;
+  height: 150px;
+  top: 40%;
+  right: 45%;
+  align-self: center;
+  margin: 0 auto;
 }
