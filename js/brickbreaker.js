@@ -8,7 +8,6 @@ const boardWidth = 560
 const boardHeight = 300
 let xDirection = -2
 let yDirection = 2
-let removedBlocks
 
 const userStart = [230, 10]
 let currentPosition = userStart
@@ -37,24 +36,6 @@ class Block {
 
 //all my blocks
 let blocks = [
-    new Block(10, 270),
-    new Block(120, 270),
-    new Block(230, 270),
-    new Block(340, 270),
-    new Block(450, 270),
-    new Block(10, 240),
-    new Block(120, 240),
-    new Block(230, 240),
-    new Block(340, 240),
-    new Block(450, 240),
-    new Block(10, 210),
-    new Block(120, 210),
-    new Block(230, 210),
-    new Block(340, 210),
-    new Block(450, 210),
-]
-
-const blocks2 = [
     new Block(10, 270),
     new Block(120, 270),
     new Block(230, 270),
@@ -127,7 +108,6 @@ function generateRandomColor() {
 
 document.addEventListener('keydown', (event) => {
     //starts game
-    console.log("playing", playing)
     if (playing === false) {
         if (event.key === 's') {
             playing = true
@@ -149,15 +129,7 @@ document.addEventListener('keydown', (event) => {
                             ballCurrentPosition = [270, 40]
                             drawUser()
                             drawBall()
-
-                            // let allBlocks = Array.from(document.querySelectorAll('.block'))
-                            removedBlocks.forEach(ele => {
-                                grid.appendChild(ele)
-                            })
-                            // blocks = blocks2
-                            addBlocks()
-                            checkForCollisions()
-
+                            window.location.reload()
                             timerUser = window.requestAnimationFrame(moveUser)
                             timerBall = window.requestAnimationFrame(moveBall)
                             restart = false
@@ -231,10 +203,11 @@ document.addEventListener('keydown', (event) => {
             //check for collisions
             function checkForCollisions() {
                 //check for block collision
+
                 for (let i = 0; i < blocks.length; i++) {
                     if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
                         let allBlocks = Array.from(document.querySelectorAll('.block'))
-                        removedBlocks = allBlocks[i]
+                        allBlocks[i].classList.add('removed')
                         allBlocks[i].classList.remove('block')
                         blocks.splice(i, 1)
                         changeDirection()
