@@ -22,7 +22,6 @@ let lives = 3
 let pause = false
 let reset = false
 let playing = false
-let restart = false
 
 //my block
 class Block {
@@ -67,6 +66,15 @@ function addBlocks() {
 
 addBlocks()
 
+function generateRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 //add user
 const user = document.createElement('div')
 user.classList.add('user')
@@ -83,7 +91,16 @@ drawBall()
 const menu = document.createElement('div')
 menu.classList.add('menu')
 grid.appendChild(menu)
-// drawMenu()
+
+//add win menu
+const winMenu = document.createElement('div')
+winMenu.classList.add('winMenu')
+grid.appendChild(winMenu)
+
+//add lose menu
+const loseMenu = document.createElement('div')
+loseMenu.classList.add('loseMenu')
+grid.appendChild(loseMenu)
 
 //draw User
 function drawUser() {
@@ -97,15 +114,6 @@ function drawBall() {
     ball.style.bottom = ballCurrentPosition[1] + 'px'
 }
 
-function generateRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
-
 document.addEventListener('keydown', (event) => {
     //starts game
     if (playing === false) {
@@ -115,25 +123,11 @@ document.addEventListener('keydown', (event) => {
                 document.getElementById('menu').style.display = 'none'
                 document.addEventListener('keydown', moveUser)
             }
-            //restart game
+            //restarts game
             function restart(e) {
                 if (playing === false) {
                     if (e.key === 'r') {
-                        restart = true
-                        playing = true
-                        if (restart) {
-                            document.getElementById('menu').style.display = 'none'
-                            document.addEventListener('keydown', moveUser)
-
-                            currentPosition = [230, 10]
-                            ballCurrentPosition = [270, 40]
-                            drawUser()
-                            drawBall()
-                            window.location.reload()
-                            timerUser = window.requestAnimationFrame(moveUser)
-                            timerBall = window.requestAnimationFrame(moveBall)
-                            restart = false
-                        }
+                        window.location.reload()
                     }
                 }
             }
@@ -141,6 +135,11 @@ document.addEventListener('keydown', (event) => {
 
             //move user
             function moveUser(e) {
+                if (playing === false) {
+                    currentPosition = [230, 10]
+                    drawUser()
+                    document.removeEventListener('keydown', moveUser)
+                }
                 switch (e.key) {
                     case 'ArrowLeft':
                         if (currentPosition[0] > 0) {
@@ -158,7 +157,6 @@ document.addEventListener('keydown', (event) => {
                         break
                     //pauses user
                     case 'p':
-
                         if (playing) {
                             pause = true
                             playing = false
@@ -166,7 +164,7 @@ document.addEventListener('keydown', (event) => {
                         if (pause) {
                             document.getElementById('menu').style.display = 'block'
                             document.removeEventListener('keydown', moveUser)
-                        } else {
+                        } else if (pause === false) {
                             document.addEventListener('keydown', moveUser)
                             playing = true
                         }
@@ -183,6 +181,10 @@ document.addEventListener('keydown', (event) => {
                     window.cancelAnimationFrame(timerBall)
                     pause = false
                 } else {
+                    if (playing === false) {
+                        window.cancelAnimationFrame(timerBall)
+                        ballCurrentPosition = [270, 40]
+                    }
                     if (reset === false) {
                         ballCurrentPosition[0] += xDirection
                         ballCurrentPosition[1] += yDirection
@@ -203,7 +205,6 @@ document.addEventListener('keydown', (event) => {
             //check for collisions
             function checkForCollisions() {
                 //check for block collision
-
                 for (let i = 0; i < blocks.length; i++) {
                     if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
                         let allBlocks = Array.from(document.querySelectorAll('.block'))
@@ -213,10 +214,10 @@ document.addEventListener('keydown', (event) => {
                         changeDirection()
                         score++
                         scoreDisplay.innerHTML = "Score: " + score
-                        if (blocks.length == 0) {
-                            scoreDisplay.innerHTML = 'You Win!'
-                            window.cancelAnimationFrame(timerBall)
-                            document.removeEventListener('keydown', moveUser)
+                        if (blocks.length === 0) {
+                            playing = false
+                            document.getElementById('winMenu').style.display = 'block'
+                            // document.removeEventListener('keydown', moveUser)
                         }
                     }
                 }
@@ -227,21 +228,27 @@ document.addEventListener('keydown', (event) => {
                 //check for user collision
                 if ((ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) && (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)) {
                     changeDirection()
+                    // console.log("ballCurrentPosition[0]: ", ballCurrentPosition[0], " > ", "currentPosition[0]: ", currentPosition[0])
+                    // console.log("ballCurrentPosition[0]: ", ballCurrentPosition[0], " < ", "currentPosition[0] + blockWidth: ", currentPosition[0] + blockWidth)
+
+                    // console.log("ballCurrentPosition[1]: ", ballCurrentPosition[1], " > ", "currentPosition[1]: ", currentPosition[1])
+                    // console.log("ballCurrentPosition[1]: ", ballCurrentPosition[1], " < ", "currentPosition[1] + blockHeight: ", currentPosition[1] + blockHeight)
                 }
-                // lives and reset user
+                // lives and user reset
                 if (ballCurrentPosition[1] <= 0) {
                     lives--
                     livesDisplay.innerHTML = "Lives: " + lives
                     currentPosition = [230, 10]
                     drawUser()
                     reset = true
+                    // game over
+                    if (lives === 0) {
+                        playing = false
+                        document.getElementById('loseMenu').style.display = 'block'
+                        reset = true
+                    }
                 }
-                // game over
-                if (lives === 0) {
-                    scoreDisplay.innerHTML = 'You lose!'
-                    document.removeEventListener('keydown', moveUser)
-                    reset = true
-                }
+
             }
 
             function changeDirection() {

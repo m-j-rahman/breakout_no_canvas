@@ -88,3 +88,37 @@ color: white;
   height: 200px;
   font-family: 'Press Start 2P', cursive;
 }
+
+.winMenu {
+  display: none;
+  position:fixed ;
+  background-color: rgb(99, 218, 2);
+  color: rgb(0, 0, 0);
+  text-align: center;
+  border-radius: 10px;
+  justify-content: center;
+  top: 37%;
+  right: 39.5%;
+  padding: 10px 0;
+  z-index: 2;
+  width: 350px;
+  height: 200px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.loseMenu {
+  display: none;
+  position:fixed ;
+  background-color: rgb(99, 218, 2);
+  color: rgb(0, 0, 0);
+  text-align: center;
+  border-radius: 10px;
+  justify-content: center;
+  top: 37%;
+  right: 39.5%;
+  padding: 10px 0;
+  z-index: 2;
+  width: 350px;
+  height: 200px;
+  font-family: 'Press Start 2P', cursive;
+}
