@@ -123,6 +123,7 @@ function drawBall() {
 document.addEventListener('keydown', (event) => {
     //starts game
     if (playing === false) {
+        // TODO: turn all key checks into a big switch case if possible, may be a bit of a pain to refactor
         if (event.key === 's') {
             playing = true
             if (pause === false) {
@@ -179,7 +180,8 @@ document.addEventListener('keydown', (event) => {
                 }
                 timerUser = window.requestAnimationFrame(moveUser)
             }
-            document.addEventListener('keydown', moveUser)
+            // document.addEventListener('keydown', moveUser)
+            moveUser(event)
 
             //moves ball
             function moveBall() {
