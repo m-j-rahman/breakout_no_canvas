@@ -4,16 +4,22 @@ const livesDisplay = document.querySelector('#lives')
 const blockWidth = 100
 const blockHeight = 20
 const ballDiameter = 20
+const ballRadius = 10
 const boardWidth = 560
 const boardHeight = 300
 let xDirection = -2
 let yDirection = 2
+let userWidth = 100;
+let userHeight = 20
 
 const userStart = [230, 10]
-let currentPosition = userStart
+let userCurrentPosition = userStart
 
 const ballStart = [270, 40]
 let ballCurrentPosition = ballStart
+
+let testX = ballCurrentPosition[0];
+let testY = ballCurrentPosition[1];
 
 let timerBall
 let timerUser
@@ -104,8 +110,8 @@ grid.appendChild(loseMenu)
 
 //draw User
 function drawUser() {
-    user.style.left = currentPosition[0] + 'px'
-    user.style.bottom = currentPosition[1] + 'px'
+    user.style.left = userCurrentPosition[0] + 'px'
+    user.style.bottom = userCurrentPosition[1] + 'px'
 }
 
 //draw Ball
@@ -136,25 +142,26 @@ document.addEventListener('keydown', (event) => {
             //move user
             function moveUser(e) {
                 if (playing === false) {
-                    currentPosition = [230, 10]
+                    userCurrentPosition = [230, 10]
                     drawUser()
                     document.removeEventListener('keydown', moveUser)
                 }
                 switch (e.key) {
                     case 'ArrowLeft':
-                        if (currentPosition[0] > 0) {
-                            currentPosition[0] -= 5
+                        if (userCurrentPosition[0] > 0) {
+                            userCurrentPosition[0] -= 5
                             drawUser()
                             timerUser = window.requestAnimationFrame(moveUser)
                         }
                         break
                     case 'ArrowRight':
-                        if (currentPosition[0] < (boardWidth - blockWidth)) {
-                            currentPosition[0] += 5
+                        if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
+                            userCurrentPosition[0] += 5
                             drawUser()
                             timerUser = window.requestAnimationFrame(moveUser)
                         }
                         break
+
                     //pauses user
                     case 'p':
                         if (playing) {
@@ -174,23 +181,26 @@ document.addEventListener('keydown', (event) => {
             }
             document.addEventListener('keydown', moveUser)
 
-            //move ball
+            //moves ball
             function moveBall() {
                 //pauses ball
                 if (pause) {
                     window.cancelAnimationFrame(timerBall)
                     pause = false
                 } else {
+                    // moves ball
                     if (playing === false) {
                         window.cancelAnimationFrame(timerBall)
                         ballCurrentPosition = [270, 40]
                     }
+                    // normal movement of the ball
                     if (reset === false) {
                         ballCurrentPosition[0] += xDirection
                         ballCurrentPosition[1] += yDirection
                         drawBall()
                         checkForCollisions()
                         timerBall = window.requestAnimationFrame(moveBall)
+                        // resets the ball to the start position if reset is true
                     } else if (reset === true) {
                         ballCurrentPosition = [270, 40]
                         reset = false
@@ -226,7 +236,7 @@ document.addEventListener('keydown', (event) => {
                     changeDirection()
                 }
                 //check for user collision
-                if ((ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) && (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)) {
+                if ((ballCurrentPosition[0] > userCurrentPosition[0] && ballCurrentPosition[0] < userCurrentPosition[0] + blockWidth) && (ballCurrentPosition[1] > userCurrentPosition[1] && ballCurrentPosition[1] < userCurrentPosition[1] + blockHeight)) {
                     changeDirection()
                     // console.log("ballCurrentPosition[0]: ", ballCurrentPosition[0], " > ", "currentPosition[0]: ", currentPosition[0])
                     // console.log("ballCurrentPosition[0]: ", ballCurrentPosition[0], " < ", "currentPosition[0] + blockWidth: ", currentPosition[0] + blockWidth)
@@ -238,7 +248,7 @@ document.addEventListener('keydown', (event) => {
                 if (ballCurrentPosition[1] <= 0) {
                     lives--
                     livesDisplay.innerHTML = "Lives: " + lives
-                    currentPosition = [230, 10]
+                    userCurrentPosition = [230, 10]
                     drawUser()
                     reset = true
                     // game over
@@ -248,9 +258,7 @@ document.addEventListener('keydown', (event) => {
                         reset = true
                     }
                 }
-
             }
-
             function changeDirection() {
                 if (xDirection === 2 && yDirection === 2) {
                     yDirection = -2

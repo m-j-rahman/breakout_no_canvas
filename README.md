@@ -4,6 +4,7 @@ TO DO LIST
 - timer resets on restart, win and lose menus
 - timer stops and starts when paused/unpaused
 
+https://www.gamedev.net/reference/articles/article735.asp // good resource for collision detection
 - sort collisions with blocks and paddle, as the ball is clipping on the corner of paddle and sides of the blocks
 - make ball start movement random instead of set path
 - centre the grid, title, and menus
