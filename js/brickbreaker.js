@@ -29,24 +29,28 @@ const userCollisionYOffset = (userHeight - userCollisionHeight) / 2
 const userStart = [230, 10]
 let userCurrentPosition = userStart
 
-const ballStart = [270, 40]
-let ballCurrentPosition = ballStart
+const ballStart = [270, 40];
+let ballCurrentPosition = ballStart;
 
-let timerBall
-let timerUser
-let score = 0
-let lives = 3
-let pause = false
-let reset = false
-let playing = false
+let timerBall;
+let timerUser;
+let score = 0;
+let lives = 3;
+let pause = false;
+let reset = false;
+let playing = false;
+let restart = false;
+
+let count = 0;
+let countCheck = false;
 
 //my block
 class Block {
     constructor(xAxis, yAxis) {
-        this.bottomLeft = [xAxis, yAxis]
-        this.bottomRight = [xAxis + blockWidth, yAxis]
-        this.topRight = [xAxis + blockWidth, yAxis + blockHeight]
-        this.topLeft = [xAxis, yAxis + blockHeight]
+        this.bottomLeft = [xAxis, yAxis];
+        this.bottomRight = [xAxis + blockWidth, yAxis];
+        this.topRight = [xAxis + blockWidth, yAxis + blockHeight];
+        this.topLeft = [xAxis, yAxis + blockHeight];
     }
 }
 
@@ -72,16 +76,16 @@ let blocks = [
 //draw my blocks
 function addBlocks() {
     for (let i = 0; i < blocks.length; i++) {
-        const block = document.createElement('div')
-        block.classList.add('block')
-        block.style.left = blocks[i].bottomLeft[0] + 'px'
-        block.style.bottom = blocks[i].bottomLeft[1] + 'px'
-        block.style.backgroundColor = generateRandomColor()
-        grid.appendChild(block)
+        const block = document.createElement("div");
+        block.classList.add("block");
+        block.style.left = blocks[i].bottomLeft[0] + "px";
+        block.style.bottom = blocks[i].bottomLeft[1] + "px";
+        block.style.backgroundColor = generateRandomColor();
+        grid.appendChild(block);
     }
 }
 
-addBlocks()
+addBlocks();
 
 function generateRandomColor() {
     var letters = '0123456789ABCDEF';
@@ -93,16 +97,16 @@ function generateRandomColor() {
 }
 
 //add user
-const user = document.createElement('div')
-user.classList.add('user')
-grid.appendChild(user)
-drawUser()
+const user = document.createElement("div");
+user.classList.add("user");
+grid.appendChild(user);
+drawUser();
 
 //add ball
-const ball = document.createElement('div')
-ball.classList.add('ball')
-grid.appendChild(ball)
-drawBall()
+const ball = document.createElement("div");
+ball.classList.add("ball");
+grid.appendChild(ball);
+drawBall();
 
 //add pause menu
 const menu = document.createElement('div')
@@ -127,10 +131,36 @@ function drawUser() {
 
 //draw Ball
 function drawBall() {
-    ball.style.left = ballCurrentPosition[0] + 'px'
-    ball.style.bottom = ballCurrentPosition[1] + 'px'
+    ball.style.left = ballCurrentPosition[0] + "px";
+    ball.style.bottom = ballCurrentPosition[1] + "px";
 }
 
+function generateRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+function Startstopwatch() {
+    let time = 0;
+    let timer = setInterval(function () {
+        time++;
+        document.getElementById("count").innerHTML = "Timer:" + time + "s";
+    }, 1000);
+}
+
+function Endstopwatch() {
+    let time = 0;
+    let timer = setInterval(function () {
+        time++;
+        document.getElementById("count").innerHTML = "Timer:" + time + "s";
+    }, 1000);
+    return
+}
+
+Startstopwatch();
 document.addEventListener('keydown', (event) => {
     //starts game
     if (playing === false) {
