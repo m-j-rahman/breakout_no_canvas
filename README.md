@@ -1,9 +1,5 @@
 TO DO LIST
 
-- Add stopwatch when game starts
-- timer resets on restart, win and lose menus
-- timer stops and starts when paused/unpaused
-
 - turn all key checks into a big switch case if possible, may be a bit of a pain to refactor
 https://www.gamedev.net/reference/articles/article735.asp // good resource for collision detection
 - sort collisions with blocks and paddle, as the ball is clipping on the corner of paddle and sides of the blocks
