@@ -40,6 +40,7 @@ let pause = false;
 let reset = false;
 let playing = false;
 let restart = false;
+let lose = false;
 
 let count = 0;
 let countCheck = false;
@@ -56,21 +57,21 @@ class Block {
 
 //all my blocks
 let blocks = [
-  new Block(10, 270),
-  new Block(120, 270),
-  new Block(230, 270),
-  new Block(340, 270),
-  new Block(450, 270),
-  new Block(10, 240),
-  new Block(120, 240),
-  new Block(230, 240),
-  new Block(340, 240),
-  new Block(450, 240),
-  new Block(10, 210),
-  new Block(120, 210),
-  new Block(230, 210),
-  new Block(340, 210),
-  new Block(450, 210),
+    new Block(10, 270),
+    new Block(120, 270),
+    new Block(230, 270),
+    new Block(340, 270),
+    new Block(450, 270),
+    new Block(10, 240),
+    new Block(120, 240),
+    new Block(230, 240),
+    new Block(340, 240),
+    new Block(450, 240),
+    new Block(10, 210),
+    new Block(120, 210),
+    new Block(230, 210),
+    new Block(340, 210),
+    new Block(450, 210),
 ];
 
 //draw my blocks
@@ -136,12 +137,12 @@ function drawBall() {
 }
 
 function generateRandomColor() {
-  var letters = "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 function startStopwatch() {
     let time = 0;
@@ -156,7 +157,7 @@ function startStopwatch() {
 startStopwatch();
 document.addEventListener('keydown', (event) => {
     //starts game
-    if (playing === false) {
+    if (playing === false && lose === false) {
         if (event.key === 's') {
             playing = true
             if (pause === false) {
@@ -175,11 +176,11 @@ document.addEventListener('keydown', (event) => {
 
             //move user
             function moveUser(e) {
-                // if (reset === false) {
-                //     userCurrentPosition = [230, 10]
-                //     drawUser()
-                //     document.removeEventListener('keydown', moveUser)
-                // }
+                if (reset === true) {
+                    userCurrentPosition = [230, 10]
+                    drawUser()
+                    document.addEventListener('keydown', moveUser)
+                }
                 switch (e.key) {
                     case 'ArrowLeft':
                         if (userCurrentPosition[0] > 0) {
@@ -209,6 +210,10 @@ document.addEventListener('keydown', (event) => {
                             document.addEventListener('keydown', moveUser)
                             playing = true
                         }
+                        if (lose) {
+                            playing = false
+                            document.removeEventListener('keydown', moveUser)
+                        }
                         break
                 }
                 timerUser = window.requestAnimationFrame(moveUser)
@@ -218,6 +223,10 @@ document.addEventListener('keydown', (event) => {
 
             //moves ball
             function moveBall() {
+                if (lose) {
+                    console.log("lose")
+                    window.cancelAnimationFrame(timerBall)
+                }
                 //pauses ball
                 if (pause) {
                     window.cancelAnimationFrame(timerBall)
@@ -228,6 +237,7 @@ document.addEventListener('keydown', (event) => {
                         window.cancelAnimationFrame(timerBall)
                         ballCurrentPosition = [270, 40]
                     }
+                   
                     // normal movement of the ball
                     if (reset === false) {
 
@@ -281,7 +291,8 @@ document.addEventListener('keydown', (event) => {
                     if (lives === 0) {
                         playing = false
                         document.getElementById('loseMenu').style.display = 'block'
-                        reset = true
+                        // reset = true
+                        lose = true
                     }
                 }
                 //check for user collision
