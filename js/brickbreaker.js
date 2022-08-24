@@ -29,12 +29,12 @@ let countCheck = false;
 
 //my block
 class Block {
-  constructor(xAxis, yAxis) {
-    this.bottomLeft = [xAxis, yAxis];
-    this.bottomRight = [xAxis + blockWidth, yAxis];
-    this.topRight = [xAxis + blockWidth, yAxis + blockHeight];
-    this.topLeft = [xAxis, yAxis + blockHeight];
-  }
+    constructor(xAxis, yAxis) {
+        this.bottomLeft = [xAxis, yAxis];
+        this.bottomRight = [xAxis + blockWidth, yAxis];
+        this.topRight = [xAxis + blockWidth, yAxis + blockHeight];
+        this.topLeft = [xAxis, yAxis + blockHeight];
+    }
 }
 
 //all my blocks
@@ -58,17 +58,26 @@ let blocks = [
 
 //draw my blocks
 function addBlocks() {
-  for (let i = 0; i < blocks.length; i++) {
-    const block = document.createElement("div");
-    block.classList.add("block");
-    block.style.left = blocks[i].bottomLeft[0] + "px";
-    block.style.bottom = blocks[i].bottomLeft[1] + "px";
-    block.style.backgroundColor = generateRandomColor();
-    grid.appendChild(block);
-  }
+    for (let i = 0; i < blocks.length; i++) {
+        const block = document.createElement("div");
+        block.classList.add("block");
+        block.style.left = blocks[i].bottomLeft[0] + "px";
+        block.style.bottom = blocks[i].bottomLeft[1] + "px";
+        block.style.backgroundColor = generateRandomColor();
+        grid.appendChild(block);
+    }
 }
 
 addBlocks();
+
+function generateRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 //add user
 const user = document.createElement("div");
@@ -83,21 +92,30 @@ grid.appendChild(ball);
 drawBall();
 
 //add pause menu
-const menu = document.createElement("div");
-menu.classList.add("menu");
-grid.appendChild(menu);
-// drawMenu()
+const menu = document.createElement('div')
+menu.classList.add('menu')
+grid.appendChild(menu)
+
+//add win menu
+const winMenu = document.createElement('div')
+winMenu.classList.add('winMenu')
+grid.appendChild(winMenu)
+
+//add lose menu
+const loseMenu = document.createElement('div')
+loseMenu.classList.add('loseMenu')
+grid.appendChild(loseMenu)
 
 //draw User
 function drawUser() {
-  user.style.left = currentPosition[0] + "px";
-  user.style.bottom = currentPosition[1] + "px";
+    user.style.left = userCurrentPosition[0] + 'px'
+    user.style.bottom = userCurrentPosition[1] + 'px'
 }
 
 //draw Ball
 function drawBall() {
-  ball.style.left = ballCurrentPosition[0] + "px";
-  ball.style.bottom = ballCurrentPosition[1] + "px";
+    ball.style.left = ballCurrentPosition[0] + "px";
+    ball.style.bottom = ballCurrentPosition[1] + "px";
 }
 
 function generateRandomColor() {
@@ -121,178 +139,183 @@ function Startstopwatch() {
 }
 
 Startstopwatch();
-
-document.addEventListener("keydown", (event) => {
-  //starts game
-  if (playing === false) {
-    if (event.key === "s") {
-      playing = true;
-      if (pause === false) {
-        document.getElementById("menu").style.display = "none";
-        document.addEventListener("keydown", moveUser);
-      }
-      //restart game
-      function restart(e) {
-        if (playing === false) {
-          if (e.key === "r") {
-            restart = true;
-            playing = true;
-            if (restart) {
-              document.getElementById("menu").style.display = "none";
-              document.addEventListener("keydown", moveUser);
-
-              currentPosition = [230, 10];
-              ballCurrentPosition = [270, 40];
-              drawUser();
-              drawBall();
-              window.location.reload();
-              timerUser = window.requestAnimationFrame(moveUser);
-              timerBall = window.requestAnimationFrame(moveBall);
-              restart = false;
+document.addEventListener('keydown', (event) => {
+    //starts game
+    if (playing === false) {
+        if (event.key === 's') {
+            playing = true
+            if (pause === false) {
+                document.getElementById('menu').style.display = 'none'
+                document.addEventListener('keydown', moveUser)
             }
-          }
-        }
-      }
-      document.addEventListener("keydown", restart);
-
-      //move user
-      function moveUser(e) {
-        switch (e.key) {
-          case "ArrowLeft":
-            if (currentPosition[0] > 0) {
-              currentPosition[0] -= 5;
-              drawUser();
-              timerUser = window.requestAnimationFrame(moveUser);
+            //restarts game
+            function restart(e) {
+                if (playing === false) {
+                    if (e.key === 'r') {
+                        window.location.reload()
+                    }
+                }
             }
-            break;
-          case "ArrowRight":
-            if (currentPosition[0] < boardWidth - blockWidth) {
-              currentPosition[0] += 5;
-              drawUser();
-              timerUser = window.requestAnimationFrame(moveUser);
-            }
-            break;
-          //pauses user
-          case "p":
-            if (playing) {
-              pause = true;
-              playing = false;
-            }
-            if (pause) {
-              document.getElementById("menu").style.display = "block";
-              document.removeEventListener("keydown", moveUser);
-            } else {
-              document.addEventListener("keydown", moveUser);
-              playing = true;
-            }
-            break;
-        }
-        timerUser = window.requestAnimationFrame(moveUser);
-      }
-      document.addEventListener("keydown", moveUser);
+            document.addEventListener('keydown', restart)
 
-      //move ball
-      function moveBall() {
-        //pauses ball
-        if (pause) {
-          window.cancelAnimationFrame(timerBall);
-          pause = false;
-        } else {
-          if (reset === false) {
-            ballCurrentPosition[0] += xDirection;
-            ballCurrentPosition[1] += yDirection;
-            drawBall();
-            checkForCollisions();
-            timerBall = window.requestAnimationFrame(moveBall);
-          } else if (reset === true) {
-            ballCurrentPosition = [270, 40];
-            reset = false;
-            drawBall();
-            checkForCollisions();
-            timerBall = window.requestAnimationFrame(moveBall);
-          }
-        }
-      }
-      timerBall = window.requestAnimationFrame(moveBall);
+            //move user
+            function moveUser(e) {
+                if (playing === false) {
+                    userCurrentPosition = [230, 10]
+                    drawUser()
+                    document.removeEventListener('keydown', moveUser)
+                }
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        if (userCurrentPosition[0] > 0) {
+                            userCurrentPosition[0] -= 5
+                            drawUser()
+                            timerUser = window.requestAnimationFrame(moveUser)
+                        }
+                        break
+                    case 'ArrowRight':
+                        if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
+                            userCurrentPosition[0] += 5
+                            drawUser()
+                            timerUser = window.requestAnimationFrame(moveUser)
+                        }
+                        break
 
-      //check for collisions
-      function checkForCollisions() {
-        //check for block collision
-
-        for (let i = 0; i < blocks.length; i++) {
-          if (
-            ballCurrentPosition[0] > blocks[i].bottomLeft[0] &&
-            ballCurrentPosition[0] < blocks[i].bottomRight[0] &&
-            ballCurrentPosition[1] + ballDiameter > blocks[i].bottomLeft[1] &&
-            ballCurrentPosition[1] < blocks[i].topLeft[1]
-          ) {
-            let allBlocks = Array.from(document.querySelectorAll(".block"));
-            allBlocks[i].classList.add("removed");
-            allBlocks[i].classList.remove("block");
-            blocks.splice(i, 1);
-            changeDirection();
-            score++;
-            scoreDisplay.innerHTML = "Score: " + score;
-            if (blocks.length == 0) {
-              scoreDisplay.innerHTML = "You Win!";
-              window.cancelAnimationFrame(timerBall);
-              document.removeEventListener("keydown", moveUser);
+                    //pauses user
+                    case 'p':
+                        if (playing) {
+                            pause = true
+                            playing = false
+                        }
+                        if (pause) {
+                            document.getElementById('menu').style.display = 'block'
+                            document.removeEventListener('keydown', moveUser)
+                        } else if (pause === false) {
+                            document.addEventListener('keydown', moveUser)
+                            playing = true
+                        }
+                        break
+                }
+                timerUser = window.requestAnimationFrame(moveUser)
             }
-          }
-        }
-        // check for wall hits
-        if (
-          ballCurrentPosition[0] >= boardWidth - ballDiameter ||
-          ballCurrentPosition[0] <= 0 ||
-          ballCurrentPosition[1] >= boardHeight - ballDiameter
-        ) {
-          changeDirection();
-        }
-        //check for user collision
-        if (
-          ballCurrentPosition[0] > currentPosition[0] &&
-          ballCurrentPosition[0] < currentPosition[0] + blockWidth &&
-          ballCurrentPosition[1] > currentPosition[1] &&
-          ballCurrentPosition[1] < currentPosition[1] + blockHeight
-        ) {
-          changeDirection();
-        }
-        // lives and reset user
-        if (ballCurrentPosition[1] <= 0) {
-          lives--;
-          livesDisplay.innerHTML = "Lives: " + lives;
-          currentPosition = [230, 10];
-          drawUser();
-          reset = true;
-        }
-        // game over
-        if (lives === 0) {
-          
-          scoreDisplay.innerHTML = "You lose!";
-          document.removeEventListener("keydown", moveUser);
-          reset = true;
-          playing = false
-        }
-      }
+            // document.addEventListener('keydown', moveUser)
+            // moveUser(event)
 
-      function changeDirection() {
-        if (xDirection === 2 && yDirection === 2) {
-          yDirection = -2;
-          return;
+            //moves ball
+            function moveBall() {
+                //pauses ball
+                if (pause) {
+                    window.cancelAnimationFrame(timerBall)
+                    pause = false
+                } else {
+                    // moves ball
+                    if (playing === false) {
+                        window.cancelAnimationFrame(timerBall)
+                        ballCurrentPosition = [270, 40]
+                    }
+                    // normal movement of the ball
+                    if (reset === false) {
+
+                        ballCurrentPosition[0] += xDirection
+                        ballCurrentPosition[1] += yDirection
+                        drawBall()
+                        checkForCollisions()
+                        timerBall = window.requestAnimationFrame(moveBall)
+                        // resets the ball to the start position if reset is true
+                    } else if (reset === true) {
+                        ballCurrentPosition = [270, 40]
+                        reset = false
+                        drawBall()
+                        checkForCollisions()
+                        timerBall = window.requestAnimationFrame(moveBall)
+                    }
+                }
+            }
+            timerBall = window.requestAnimationFrame(moveBall)
+
+            //check for collisions
+            function checkForCollisions() {
+                //check for block collision
+                for (let i = 0; i < blocks.length; i++) {
+                    if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
+                        let allBlocks = Array.from(document.querySelectorAll('.block'))
+                        allBlocks[i].classList.add('removed')
+                        allBlocks[i].classList.remove('block')
+                        blocks.splice(i, 1)
+                        changeDirection()
+                        score++
+                        scoreDisplay.innerHTML = "Score: " + score
+                        if (blocks.length === 0) {
+                            playing = false
+                            document.getElementById('winMenu').style.display = 'block'
+                        }
+                    }
+                }
+                // check for wall hits
+                if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
+                    changeDirection()
+                }
+                // lives and user reset
+                if (ballCurrentPosition[1] === 0) {
+                    lives--
+                    livesDisplay.innerHTML = "Lives: " + lives
+                    userCurrentPosition = [230, 10]
+                    drawUser()
+                    reset = true
+                    // game over
+                    if (lives === 0) {
+                        playing = false
+                        document.getElementById('loseMenu').style.display = 'block'
+                        reset = true
+                    }
+                }
+                //check for user collision
+                let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
+                let ballRight = ballLeft + ballCollisionWidth;
+                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
+                let ballTop = ballBottom + ballCollisionHeight;
+
+                let userLeft = userCurrentPosition[0] + userCollisionXOffset;
+                let userRight = userLeft + userCollisionWidth;
+                let userBottom = userCurrentPosition[1] + ballCollisionYOffset;
+                let userTop = userBottom + userCollisionHeight;
+                console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
+                console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
+                console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
+                console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
+                if (ballTop < userBottom) {
+                    // console.log("ballTop: ", ballTop," < userBottom: ", userBottom)
+                    if (ballRight < userLeft) {
+                        // console.log("ballRight: ", ballRight, " < userLeft: ", userLeft)
+                        changeDirection()
+                    }
+                    if (ballLeft < userRight) {
+                        // console.log("ballLeft: ", ballLeft, " < userRight: ", userRight)
+                        changeDirection()
+                    }
+                }
+            }
+
+            function changeDirection() {
+                //TODO: add optional variable in argument to ensure when collisions occur the ball goes up or down. So if ball hits paddle on the side the ball always goes up
+                // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
+                if (xDirection === 2 && yDirection === 2) {
+                    yDirection = -2
+                    return
+                }
+                if (xDirection === 2 && yDirection === -2) {
+                    xDirection = -2
+                    return
+                }
+                if (xDirection === -2 && yDirection === -2) {
+                    yDirection = 2
+                    return
+                }
+                if (xDirection === -2 && yDirection === 2) {
+                    xDirection = 2
+                    return
+                }
+            }
         }
-        if (xDirection === 2 && yDirection === -2) {
-          xDirection = -2;
-          return;
-        }
-        if (xDirection === -2 && yDirection === -2) {
-          yDirection = 2;
-          return;
-        }
-        if (xDirection === -2 && yDirection === 2) {
-          xDirection = 2;
-          return;
-        }
-      }
     }
-  }
 });
