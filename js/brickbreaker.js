@@ -56,22 +56,22 @@ class Block {
 
 //all my blocks
 let blocks = [
-  new Block(10, 270),
-  new Block(120, 270),
-  new Block(230, 270),
-  new Block(340, 270),
-  new Block(450, 270),
-  new Block(10, 240),
-  new Block(120, 240),
-  new Block(230, 240),
-  new Block(340, 240),
-  new Block(450, 240),
-  new Block(10, 210),
-  new Block(120, 210),
-  new Block(230, 210),
-  new Block(340, 210),
-  new Block(450, 210),
-];
+    new Block(10, 270),
+    new Block(120, 270),
+    new Block(230, 270),
+    new Block(340, 270),
+    new Block(450, 270),
+    new Block(10, 240),
+    new Block(120, 240),
+    new Block(230, 240),
+    new Block(340, 240),
+    new Block(450, 240),
+    new Block(10, 210),
+    new Block(120, 210),
+    new Block(230, 210),
+    new Block(340, 210),
+    new Block(450, 210),
+]
 
 //draw my blocks
 function addBlocks() {
@@ -136,12 +136,12 @@ function drawBall() {
 }
 
 function generateRandomColor() {
-  var letters = "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 function Startstopwatch() {
   console.log(playing);
@@ -177,11 +177,11 @@ document.addEventListener('keydown', (event) => {
 
             //move user
             function moveUser(e) {
-                if (playing === false) {
-                    userCurrentPosition = [230, 10]
-                    drawUser()
-                    document.removeEventListener('keydown', moveUser)
-                }
+                // if (playing === false) {
+                //     userCurrentPosition = [230, 10]
+                //     drawUser()
+                //     document.removeEventListener('keydown', moveUser)
+                // }
                 switch (e.key) {
                     case 'ArrowLeft':
                         if (userCurrentPosition[0] > 0) {
@@ -216,8 +216,7 @@ document.addEventListener('keydown', (event) => {
                 timerUser = window.requestAnimationFrame(moveUser)
             }
             // document.addEventListener('keydown', moveUser)
-            // moveUser(event)
-
+            moveUser(event)
             //moves ball
             function moveBall() {
                 //pauses ball
@@ -289,17 +288,13 @@ document.addEventListener('keydown', (event) => {
                 //check for user collision
                 let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
                 let ballRight = ballLeft + ballCollisionWidth;
-                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
-                let ballTop = ballBottom + ballCollisionHeight;
+                let ballTop = ballCurrentPosition[1] + ballCollisionYOffset;
+                let ballBottom = ballTop + ballCollisionHeight;
 
                 let userLeft = userCurrentPosition[0] + userCollisionXOffset;
                 let userRight = userLeft + userCollisionWidth;
-                let userBottom = userCurrentPosition[1] + ballCollisionYOffset;
-                let userTop = userBottom + userCollisionHeight;
-                console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
-                console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
-                console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
-                console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
+                let userTop = userCurrentPosition[1] + ballCollisionYOffset;
+                let userBottom = userTop + userCollisionHeight;
                 if (ballTop < userBottom) {
                     // console.log("ballTop: ", ballTop," < userBottom: ", userBottom)
                     if (ballRight < userLeft) {

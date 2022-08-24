@@ -4,7 +4,7 @@ TO DO LIST
 - timer resets on restart, win and lose menus
 - timer stops and starts when paused/unpaused
 
-- turn all key checks into a big switch case if possible, may be a bit of a pain to refactor
+- turn all key checks into a big switch scase if possible, may be a bit of a pain to refactor
 https://www.gamedev.net/reference/articles/article735.asp // good resource for collision detection
 - sort collisions with blocks and paddle, as the ball is clipping on the corner of paddle and sides of the blocks
 - make ball start movement random instead of set path
@@ -25,3 +25,4 @@ Dev Tool/Performance tasks
 - https://murtada.nl/blog/going-jank-free-achieving-60-fps-smooth-websites
 
 AUDIT: https://learn.01founders.co/git/root/public/src/branch/master/subjects/make-your-game/audit
+
