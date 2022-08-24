@@ -143,7 +143,7 @@ function generateRandomColor() {
     }
     return color;
 }
-function Startstopwatch() {
+function startStopwatch() {
     let time = 0;
     let timer = setInterval(function () {
         if (playing) {
@@ -153,7 +153,7 @@ function Startstopwatch() {
     }, 1000);
 }
 
-Startstopwatch();
+startStopwatch();
 document.addEventListener('keydown', (event) => {
     //starts game
     if (playing === false) {
