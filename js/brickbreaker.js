@@ -138,7 +138,7 @@ function generateRandomColor() {
     //   }
     // }, 1000);
 
-    function stopwatch() {
+    function Startstopwatch() {
       let time = 0;
       let timer = setInterval(function () {
         time++;
@@ -146,7 +146,16 @@ function generateRandomColor() {
       }, 1000);
     }
 
-    stopwatch();
+    function Endstopwatch() {
+      let time = 0;
+      let timer = setInterval(function () {
+        time++;
+        document.getElementById("count").innerHTML = "Timer:" + time + "s";
+      }, 1000);
+      return
+    }
+
+    Startstopwatch();
 document.addEventListener("keydown", (event) => {
   //starts game
   if (event.key === "s") {
