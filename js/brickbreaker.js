@@ -1,16 +1,33 @@
-const grid = document.querySelector(".grid");
-const scoreDisplay = document.querySelector("#score");
-const livesDisplay = document.querySelector("#lives");
-const blockWidth = 100;
-const blockHeight = 20;
-const ballDiameter = 20;
-const boardWidth = 560;
-const boardHeight = 300;
-let xDirection = -2;
-let yDirection = 2;
+const grid = document.querySelector('.grid')
+const scoreDisplay = document.querySelector('#score')
+const livesDisplay = document.querySelector('#lives')
+const blockWidth = 100
+const blockHeight = 20
 
-const userStart = [230, 10];
-let userCurrentPosition = userStart;
+const ballDiameter = 20
+const ballRadius = 10
+const ballWidth = 20
+const ballHeight = 20
+const ballCollisionWidth = ballWidth * 0.80
+const ballCollisionHeight = ballHeight * 0.80
+const ballCollisionXOffset = (ballWidth - ballCollisionWidth) / 2
+const ballCollisionYOffset = (ballHeight - ballCollisionHeight) / 2
+
+let xDirection = -2
+let yDirection = 2
+
+const boardWidth = 560
+const boardHeight = 300
+
+let userWidth = 100;
+let userHeight = 20
+const userCollisionWidth = userWidth * 0.80
+const userCollisionHeight = userHeight * 0.80
+const userCollisionXOffset = (userWidth - userCollisionWidth) / 2
+const userCollisionYOffset = (userHeight - userCollisionHeight) / 2
+
+const userStart = [230, 10]
+let userCurrentPosition = userStart
 
 const ballStart = [270, 40];
 let ballCurrentPosition = ballStart;
