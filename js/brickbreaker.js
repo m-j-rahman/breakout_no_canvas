@@ -143,19 +143,17 @@ function generateRandomColor() {
   }
   return color;
 }
-function Startstopwatch() {
-  console.log(playing);
-  let time = 0;
-  let timer = setInterval(function () {
-    if (playing == true) {
-      console.log(playing);
-      time++;
-      document.getElementById("count").innerHTML = "Timer:" + time + "s";
-    }
-  }, 1000);
+function startStopwatch() {
+    let time = 0;
+    let timer = setInterval(function () {
+        if (playing) {
+            time++;
+            document.getElementById("count").innerHTML = "Timer:" + time + "s";
+        }
+    }, 1000);
 }
 
-Startstopwatch();
+startStopwatch();
 document.addEventListener('keydown', (event) => {
     //starts game
     if (playing === false) {
@@ -177,11 +175,11 @@ document.addEventListener('keydown', (event) => {
 
             //move user
             function moveUser(e) {
-                if (playing === false) {
-                    userCurrentPosition = [230, 10]
-                    drawUser()
-                    document.removeEventListener('keydown', moveUser)
-                }
+                // if (reset === false) {
+                //     userCurrentPosition = [230, 10]
+                //     drawUser()
+                //     document.removeEventListener('keydown', moveUser)
+                // }
                 switch (e.key) {
                     case 'ArrowLeft':
                         if (userCurrentPosition[0] > 0) {
@@ -216,7 +214,7 @@ document.addEventListener('keydown', (event) => {
                 timerUser = window.requestAnimationFrame(moveUser)
             }
             // document.addEventListener('keydown', moveUser)
-            // moveUser(event)
+            moveUser(event)
 
             //moves ball
             function moveBall() {
@@ -289,17 +287,17 @@ document.addEventListener('keydown', (event) => {
                 //check for user collision
                 let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
                 let ballRight = ballLeft + ballCollisionWidth;
-                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
-                let ballTop = ballBottom + ballCollisionHeight;
+                let ballTop = ballCurrentPosition[1] + ballCollisionYOffset;
+                let ballBottom = ballTop + ballCollisionHeight;
 
                 let userLeft = userCurrentPosition[0] + userCollisionXOffset;
                 let userRight = userLeft + userCollisionWidth;
-                let userBottom = userCurrentPosition[1] + ballCollisionYOffset;
-                let userTop = userBottom + userCollisionHeight;
-                console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
-                console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
-                console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
-                console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
+                let userTop = userCurrentPosition[1] + ballCollisionYOffset;
+                let userBottom = userTop + userCollisionHeight;
+                // console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
+                // console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
+                // console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
+                // console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
                 if (ballTop < userBottom) {
                     // console.log("ballTop: ", ballTop," < userBottom: ", userBottom)
                     if (ballRight < userLeft) {
@@ -315,7 +313,7 @@ document.addEventListener('keydown', (event) => {
 
             function changeDirection() {
                 //TODO: add optional variable in argument to ensure when collisions occur the ball goes up or down. So if ball hits paddle on the side the ball always goes up
-                // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
+                console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
                 if (xDirection === 2 && yDirection === 2) {
                     yDirection = -2
                     return
