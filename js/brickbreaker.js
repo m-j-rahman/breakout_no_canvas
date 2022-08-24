@@ -40,6 +40,7 @@ let pause = false;
 let reset = false;
 let playing = false;
 let restart = false;
+let lose = false;
 
 let count = 0;
 let countCheck = false;
@@ -71,7 +72,7 @@ let blocks = [
     new Block(230, 210),
     new Block(340, 210),
     new Block(450, 210),
-]
+];
 
 //draw my blocks
 function addBlocks() {
@@ -136,29 +137,27 @@ function drawBall() {
 }
 
 function generateRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
+    var letters = "0123456789ABCDEF";
+    var color = "#";
     for (var i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
 }
-function Startstopwatch() {
-  console.log(playing);
-  let time = 0;
-  let timer = setInterval(function () {
-    if (playing == true) {
-      console.log(playing);
-      time++;
-      document.getElementById("count").innerHTML = "Timer:" + time + "s";
-    }
-  }, 1000);
+function startStopwatch() {
+    let time = 0;
+    let timer = setInterval(function () {
+        if (playing) {
+            time++;
+            document.getElementById("count").innerHTML = "Timer:" + time + "s";
+        }
+    }, 1000);
 }
 
-Startstopwatch();
+startStopwatch();
 document.addEventListener('keydown', (event) => {
     //starts game
-    if (playing === false) {
+    if (playing === false && lose === false) {
         if (event.key === 's') {
             playing = true
             if (pause === false) {
@@ -177,11 +176,11 @@ document.addEventListener('keydown', (event) => {
 
             //move user
             function moveUser(e) {
-                // if (playing === false) {
-                //     userCurrentPosition = [230, 10]
-                //     drawUser()
-                //     document.removeEventListener('keydown', moveUser)
-                // }
+                if (reset === true) {
+                    userCurrentPosition = [230, 10]
+                    drawUser()
+                    document.addEventListener('keydown', moveUser)
+                }
                 switch (e.key) {
                     case 'ArrowLeft':
                         if (userCurrentPosition[0] > 0) {
@@ -211,14 +210,23 @@ document.addEventListener('keydown', (event) => {
                             document.addEventListener('keydown', moveUser)
                             playing = true
                         }
+                        if (lose) {
+                            playing = false
+                            document.removeEventListener('keydown', moveUser)
+                        }
                         break
                 }
                 timerUser = window.requestAnimationFrame(moveUser)
             }
             // document.addEventListener('keydown', moveUser)
             moveUser(event)
+
             //moves ball
             function moveBall() {
+                if (lose) {
+                    console.log("lose")
+                    window.cancelAnimationFrame(timerBall)
+                }
                 //pauses ball
                 if (pause) {
                     window.cancelAnimationFrame(timerBall)
@@ -229,6 +237,7 @@ document.addEventListener('keydown', (event) => {
                         window.cancelAnimationFrame(timerBall)
                         ballCurrentPosition = [270, 40]
                     }
+                   
                     // normal movement of the ball
                     if (reset === false) {
 
@@ -282,7 +291,8 @@ document.addEventListener('keydown', (event) => {
                     if (lives === 0) {
                         playing = false
                         document.getElementById('loseMenu').style.display = 'block'
-                        reset = true
+                        // reset = true
+                        lose = true
                     }
                 }
                 //check for user collision
@@ -295,6 +305,10 @@ document.addEventListener('keydown', (event) => {
                 let userRight = userLeft + userCollisionWidth;
                 let userTop = userCurrentPosition[1] + ballCollisionYOffset;
                 let userBottom = userTop + userCollisionHeight;
+                // console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
+                // console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
+                // console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
+                // console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
                 if (ballTop < userBottom) {
                     // console.log("ballTop: ", ballTop," < userBottom: ", userBottom)
                     if (ballRight < userLeft) {
@@ -310,7 +324,7 @@ document.addEventListener('keydown', (event) => {
 
             function changeDirection() {
                 //TODO: add optional variable in argument to ensure when collisions occur the ball goes up or down. So if ball hits paddle on the side the ball always goes up
-                // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
+                console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
                 if (xDirection === 2 && yDirection === 2) {
                     yDirection = -2
                     return
