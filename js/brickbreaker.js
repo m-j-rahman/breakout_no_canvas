@@ -162,7 +162,6 @@ startStopwatch();
 
 //restarts game
 function restart(e) {
-    console.log(pause)
     if (restartGame || !pause) {
         if (e.key === 'r') {
             window.location.reload()
@@ -319,7 +318,7 @@ document.addEventListener('keydown', (event) => {
 
                 if (ballBottom < userTop) {
                     if (ballRight > userLeft && ballLeft < userRight) {
-                        changeDirection(true, false)
+                        changeDirection(true)
                     }
                 }
             }
@@ -335,14 +334,16 @@ document.addEventListener('keydown', (event) => {
                 }
                 // if moving right and down
                 if (xDirection === 2 && yDirection === -2) {
+                    // if (biasUp) {
+                    //     yDirection = 2
+                    // }
                     xDirection = -2
                     return
                 }
                 // if moving left and down
                 if (xDirection === -2 && yDirection === -2) {
-                    if (!biasDown) {
-                        yDirection = 2
-                    }
+                    yDirection = 2
+
                     return
                 }
                 // if moving left and up
