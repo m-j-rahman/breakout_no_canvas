@@ -298,25 +298,16 @@ document.addEventListener('keydown', (event) => {
                 //check for user collision
                 let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
                 let ballRight = ballLeft + ballCollisionWidth;
-                let ballTop = ballCurrentPosition[1] + ballCollisionYOffset;
-                let ballBottom = ballTop + ballCollisionHeight;
+                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
+                // let ballTop = ballBottom + ballCollisionHeight;
 
                 let userLeft = userCurrentPosition[0] + userCollisionXOffset;
                 let userRight = userLeft + userCollisionWidth;
-                let userTop = userCurrentPosition[1] + ballCollisionYOffset;
-                let userBottom = userTop + userCollisionHeight;
-                // console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
-                // console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
-                // console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
-                // console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
-                if (ballTop < userBottom) {
-                    // console.log("ballTop: ", ballTop," < userBottom: ", userBottom)
-                    if (ballRight < userLeft) {
-                        // console.log("ballRight: ", ballRight, " < userLeft: ", userLeft)
-                        changeDirection()
-                    }
-                    if (ballLeft < userRight) {
-                        // console.log("ballLeft: ", ballLeft, " < userRight: ", userRight)
+                let userBottom = userCurrentPosition[1] + userCollisionYOffset;
+                let userTop = userBottom + userCollisionHeight;
+
+                if (ballBottom < userTop) {
+                    if (ballRight > userLeft && ballLeft < userRight) {
                         changeDirection()
                     }
                 }
