@@ -162,7 +162,8 @@ startStopwatch();
 
 //restarts game
 function restart(e) {
-    if (restartGame) {
+    console.log(pause)
+    if (restartGame || !pause) {
         if (e.key === 'r') {
             window.location.reload()
         }
@@ -212,7 +213,7 @@ document.addEventListener('keydown', (event) => {
                             playing = false
                         }
                         if (pause) {
-                            restartGame = true
+                            // restartGame = true
                             document.getElementById('menu').style.display = 'block'
                             document.removeEventListener('keydown', moveUser)
                         } else if (pause === false) {
@@ -339,7 +340,9 @@ document.addEventListener('keydown', (event) => {
                 }
                 // if moving left and down
                 if (xDirection === -2 && yDirection === -2) {
-                    yDirection = 2
+                    if (!biasDown) {
+                        yDirection = 2
+                    }
                     return
                 }
                 // if moving left and up
