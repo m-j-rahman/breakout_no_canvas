@@ -3,6 +3,10 @@ const scoreDisplay = document.querySelector('#score')
 const livesDisplay = document.querySelector('#lives')
 const blockWidth = 100
 const blockHeight = 20
+const blockCollisionWidth = blockWidth * 0.80
+const blockCollisionHeight = blockHeight * 0.80
+const blockCollisionXOffset = (blockWidth - blockCollisionWidth) / 2
+const blockCollisionYOffset = (blockHeight - blockCollisionHeight) / 2
 
 const ballDiameter = 20
 const ballRadius = 10
@@ -39,9 +43,9 @@ let lives = 3;
 let pause = false;
 let reset = false;
 let playing = false;
-let restart = false;
 let lose = false;
 let win = false;
+let restartGame = false;
 
 let count = 0;
 let countCheck = false;
@@ -154,33 +158,36 @@ function startStopwatch() {
         }
     }, 1000);
 }
-
 startStopwatch();
+
+//restarts game
+function restart(e) {
+    if (restartGame) {
+        if (e.key === 'r') {
+            window.location.reload()
+        }
+    }
+}
+document.addEventListener('keydown', restart)
+
 document.addEventListener('keydown', (event) => {
     //starts game
-    if (playing === false && lose === false && win === false) {
+    if (playing === false && restartGame === false) {
         if (event.key === 's') {
             playing = true
             if (pause === false) {
                 document.getElementById('menu').style.display = 'none'
                 document.addEventListener('keydown', moveUser)
             }
-            //restarts game
-            function restart(e) {
-                if (playing === false) {
-                    if (e.key === 'r') {
-                        window.location.reload()
-                    }
-                }
-            }
-            document.addEventListener('keydown', restart)
-
             //move user
             function moveUser(e) {
                 if (reset === true) {
                     userCurrentPosition = [230, 10]
                     drawUser()
                     document.addEventListener('keydown', moveUser)
+                }
+                if (win || lose) {
+                    document.removeEventListener('keydown', moveUser)
                 }
                 switch (e.key) {
                     case 'ArrowLeft':
@@ -205,22 +212,17 @@ document.addEventListener('keydown', (event) => {
                             playing = false
                         }
                         if (pause) {
+                            restartGame = true
                             document.getElementById('menu').style.display = 'block'
                             document.removeEventListener('keydown', moveUser)
                         } else if (pause === false) {
                             document.addEventListener('keydown', moveUser)
                             playing = true
                         }
-                        if (lose || win) {
-                            playing = false
-                            document.removeEventListener('keydown', moveUser)
-                        }
                         break
                 }
                 timerUser = window.requestAnimationFrame(moveUser)
             }
-            // document.addEventListener('keydown', moveUser)
-            moveUser(event)
 
             //moves ball
             function moveBall() {
@@ -237,10 +239,9 @@ document.addEventListener('keydown', (event) => {
                         window.cancelAnimationFrame(timerBall)
                         ballCurrentPosition = [270, 40]
                     }
-                   
+
                     // normal movement of the ball
                     if (reset === false) {
-
                         ballCurrentPosition[0] += xDirection
                         ballCurrentPosition[1] += yDirection
                         drawBall()
@@ -260,20 +261,33 @@ document.addEventListener('keydown', (event) => {
 
             //check for collisions
             function checkForCollisions() {
+                let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
+                let ballRight = ballLeft + ballCollisionWidth;
+                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
+                let ballTop = ballBottom + ballCollisionHeight;
                 //check for block collision
                 for (let i = 0; i < blocks.length; i++) {
-                    if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
-                        let allBlocks = Array.from(document.querySelectorAll('.block'))
-                        allBlocks[i].classList.add('removed')
-                        allBlocks[i].classList.remove('block')
-                        blocks.splice(i, 1)
-                        changeDirection()
-                        score++
-                        scoreDisplay.innerHTML = "Score: " + score
-                        if (blocks.length === 0) {
-                            playing = false
-                            win = true
-                            document.getElementById('winMenu').style.display = 'block'
+                    let blockLeft = blocks[i].bottomLeft[0] + blockCollisionXOffset;
+                    let blockRight = blockLeft + blockCollisionWidth;
+                    let blockBottom = blocks[i].bottomLeft[1] + blockCollisionYOffset;
+                    let blockTop = blockBottom + blockCollisionHeight;
+                    if (ballTop >= blockBottom || ballBottom >= blockTop) {
+                        if (ballRight > blockLeft && ballLeft < blockRight) {
+                            // if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
+                            let allBlocks = Array.from(document.querySelectorAll('.block'))
+                            allBlocks[i].classList.add('removed')
+                            allBlocks[i].classList.remove('block')
+                            blocks.splice(i, 1)
+                            changeDirection(false, true)
+                            score++
+                            scoreDisplay.innerHTML = "Score: " + score
+                            if (blocks.length === 0) {
+                                playing = false
+                                win = true
+                                restartGame = true
+                                console.log("playing: ", playing, "win: ", win, "reset: ", reset)
+                                document.getElementById('winMenu').style.display = 'block'
+                            }
                         }
                     }
                 }
@@ -291,17 +305,12 @@ document.addEventListener('keydown', (event) => {
                     // game over
                     if (lives === 0) {
                         playing = false
-                        document.getElementById('loseMenu').style.display = 'block'
-                        // reset = true
+                        restartGame = true
                         lose = true
+                        document.getElementById('loseMenu').style.display = 'block'
                     }
                 }
                 //check for user collision
-                let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
-                let ballRight = ballLeft + ballCollisionWidth;
-                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
-                // let ballTop = ballBottom + ballCollisionHeight;
-
                 let userLeft = userCurrentPosition[0] + userCollisionXOffset;
                 let userRight = userLeft + userCollisionWidth;
                 let userBottom = userCurrentPosition[1] + userCollisionYOffset;
@@ -309,12 +318,12 @@ document.addEventListener('keydown', (event) => {
 
                 if (ballBottom < userTop) {
                     if (ballRight > userLeft && ballLeft < userRight) {
-                        changeDirection(true)
+                        changeDirection(true, false)
                     }
                 }
             }
 
-            function changeDirection(biasUp = false) {
+            function changeDirection(biasUp = false, biasDown = false) {
                 // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
                 // if moving right and up
                 if (xDirection === 2 && yDirection === 2) {
