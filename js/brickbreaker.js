@@ -41,6 +41,7 @@ let reset = false;
 let playing = false;
 let restart = false;
 let lose = false;
+let win = false;
 
 let count = 0;
 let countCheck = false;
@@ -157,7 +158,7 @@ function startStopwatch() {
 startStopwatch();
 document.addEventListener('keydown', (event) => {
     //starts game
-    if (playing === false && lose === false) {
+    if (playing === false && lose === false && win === false) {
         if (event.key === 's') {
             playing = true
             if (pause === false) {
@@ -210,7 +211,7 @@ document.addEventListener('keydown', (event) => {
                             document.addEventListener('keydown', moveUser)
                             playing = true
                         }
-                        if (lose) {
+                        if (lose || win) {
                             playing = false
                             document.removeEventListener('keydown', moveUser)
                         }
@@ -223,8 +224,7 @@ document.addEventListener('keydown', (event) => {
 
             //moves ball
             function moveBall() {
-                if (lose) {
-                    console.log("lose")
+                if (lose || win) {
                     window.cancelAnimationFrame(timerBall)
                 }
                 //pauses ball
@@ -272,6 +272,7 @@ document.addEventListener('keydown', (event) => {
                         scoreDisplay.innerHTML = "Score: " + score
                         if (blocks.length === 0) {
                             playing = false
+                            win = true
                             document.getElementById('winMenu').style.display = 'block'
                         }
                     }
@@ -308,26 +309,31 @@ document.addEventListener('keydown', (event) => {
 
                 if (ballBottom < userTop) {
                     if (ballRight > userLeft && ballLeft < userRight) {
-                        changeDirection()
+                        changeDirection(true)
                     }
                 }
             }
 
-            function changeDirection() {
-                //TODO: add optional variable in argument to ensure when collisions occur the ball goes up or down. So if ball hits paddle on the side the ball always goes up
-                console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
+            function changeDirection(biasUp = false) {
+                // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
+                // if moving right and up
                 if (xDirection === 2 && yDirection === 2) {
-                    yDirection = -2
+                    if (!biasUp) {
+                        yDirection = -2
+                    }
                     return
                 }
+                // if moving right and down
                 if (xDirection === 2 && yDirection === -2) {
                     xDirection = -2
                     return
                 }
+                // if moving left and down
                 if (xDirection === -2 && yDirection === -2) {
                     yDirection = 2
                     return
                 }
+                // if moving left and up
                 if (xDirection === -2 && yDirection === 2) {
                     xDirection = 2
                     return
