@@ -338,9 +338,9 @@ document.addEventListener('keydown', (event) => {
                 if (xDirection === 2 && yDirection === -2) {
                     // ball moves up and left when biasUp is true
                     // ball moves down and left when biasUp is false
-                    if (biasUp) {
-                        yDirection = 2
-                    }
+                    // if (biasUp) {
+                    //     yDirection = 2
+                    // }
                     xDirection = -2
                     return
                 }
@@ -348,9 +348,9 @@ document.addEventListener('keydown', (event) => {
                 if (xDirection === -2 && yDirection === -2) {
                     // ball moves left and up when biasUp is false
                     // ball moves right and up when biasUp is true
-                    if (biasUp) {
-                        xDirection = 2
-                    }
+                    // if (biasUp) {
+                    //     xDirection = 2
+                    // }
                     yDirection = 2
                     return
                 }
