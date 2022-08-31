@@ -6,43 +6,42 @@
   margin-top: 100px;
 }
 
-.block{
+.block {
   justify-content: center;
 }
 
-.bg2{
-display: grid;
-grid-template-columns: 33% 33% 33%;
-background-color: black;
-color: white;
+.bg2 {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  background-color: black;
+  color: white;
 }
 
-#counters{
+#counters {
   font-family: 'Press Start 2P', cursive;
   justify-content: center;
 }
 
 
-#text{
+#text {
   font-family: 'Press Start 2P', cursive;
   font-size: 10px;
 }
 
-#lives{
+#lives {
   font-family: 'Press Start 2P', cursive;
 }
 
-
-
-#score{
+#score {
   font-family: 'Press Start 2P', cursive;
 }
+
 .title {
   font-family: 'Press Start 2P', cursive;
   font-size: 40px;
 }
 
-.test{
+.test {
   /* display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -70,11 +69,15 @@ color: white;
   height: 20px;
   border-radius: 10px;
   background-color: rgb(255, 255, 255);
+  background: url("./ball.png");
+  background-color: rgb(255, 255, 255);
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .menu {
   display: none;
-  position:fixed ;
+  position: fixed;
   background-color: rgb(99, 218, 2);
   color: rgb(0, 0, 0);
   text-align: center;
@@ -91,7 +94,7 @@ color: white;
 
 .winMenu {
   display: none;
-  position:fixed ;
+  position: fixed;
   background-color: rgb(99, 218, 2);
   color: rgb(0, 0, 0);
   text-align: center;
@@ -108,7 +111,7 @@ color: white;
 
 .loseMenu {
   display: none;
-  position:fixed ;
+  position: fixed;
   background-color: rgb(99, 218, 2);
   color: rgb(0, 0, 0);
   text-align: center;

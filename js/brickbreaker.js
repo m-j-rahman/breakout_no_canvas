@@ -19,6 +19,8 @@ const ballCollisionYOffset = (ballHeight - ballCollisionHeight) / 2
 
 let xDirection = -2
 let yDirection = 2
+// 0 == flipX | 1 == flipY
+let xyFlip = 0
 
 const boardWidth = 560
 const boardHeight = 300
@@ -278,31 +280,32 @@ document.addEventListener('keydown', (event) => {
                         if (ballRight >= blockLeft && ballLeft <= blockRight) {
                             // if (ballTop < blockBottom && ballBottom > blockTop) {
 
-                                let allBlocks = Array.from(document.querySelectorAll('.block'))
-                                allBlocks[j].classList.add('removed')
-                                allBlocks[j].classList.remove('block')
-                                blocks.splice(j, 1)
-                                changeDirection(false)
-                                // score display
-                                score++
-                                scoreDisplay.innerHTML = "Score: " + score
-                                // if blocks are all removed, then gameover, user wins
-                                if (blocks.length === 0) {
-                                    playing = false
-                                    win = true
-                                    restartGame = true
-                                    document.getElementById('winMenu').style.display = 'block'
-                                }
+                            let allBlocks = Array.from(document.querySelectorAll('.block'))
+                            allBlocks[j].classList.add('removed')
+                            allBlocks[j].classList.remove('block')
+                            blocks.splice(j, 1)
+                            changeDirection("block")
+                            // score display
+                            score++
+                            scoreDisplay.innerHTML = "Score: " + score
+                            // if blocks are all removed, then gameover, user wins
+                            if (blocks.length === 0) {
+                                playing = false
+                                win = true
+                                restartGame = true
+                                document.getElementById('winMenu').style.display = 'block'
+                            }
                             // }
                         }
                     }
                 }
                 // check for wall hits
-                if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
-                    changeDirection()
-                }
-                // lives and user reset
-                if (ballCurrentPosition[1] === 0) {
+                if (ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
+                    changeDirection("ceiling")
+                } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
+                    changeDirection("wall")
+                } else if (ballCurrentPosition[1] === 0) {
+                    // lives and user reset
                     lives--
                     livesDisplay.innerHTML = "Lives: " + lives
                     userCurrentPosition = [230, 10]
@@ -322,49 +325,55 @@ document.addEventListener('keydown', (event) => {
                 let userBottom = userCurrentPosition[1] + userCollisionYOffset;
                 let userTop = userBottom + userCollisionHeight;
 
+
                 if (ballBottom < userTop) {
                     if (ballRight > userLeft && ballLeft < userRight) {
-                        changeDirection(true)
+                        changeDirection("userTop")
+                        if ((userBottom < ballBottom) && (userTop > ballBottom)) {
+                            if ((userLeft <= ballRight) && (userLeft >= ballLeft)) {
+                                changeDirection("userLeft")
+                            } else if ((userRight <= ballLeft) && (userRight >= ballRight)) {
+                                changeDirection("userRight")
+                            }
+                        }
                     }
                 }
             }
 
-            function changeDirection(biasUp = false) {
-                // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
-                // if moving right and up
-                if (xDirection === 2 && yDirection === 2) {
-                    // ball moves right and down if biasUp is false
-                    // ball moves right and up if biasUp is true
-                    if (!biasUp) {
+            function changeDirection(deflected = "") {
+                xInitial = xDirection
+                yInitial = yDirection
+
+                switch (deflected) {
+                    case "wall":
+                        xDirection = xInitial * -1
+                        break;
+                    case "ceiling":
                         yDirection = -2
-                    }
-                    return
-                }
-                // if moving right and down
-                if (xDirection === 2 && yDirection === -2) {
-                    // ball moves up and left when biasUp is true
-                    // ball moves down and left when biasUp is false
-                    // if (biasUp) {
-                    //     yDirection = 2
-                    // }
-                    xDirection = -2
-                    return
-                }
-                // if moving left and down
-                if (xDirection === -2 && yDirection === -2) {
-                    // ball moves left and up when biasUp is false
-                    // ball moves right and up when biasUp is true
-                    // if (biasUp) {
-                    //     xDirection = 2
-                    // }
-                    yDirection = 2
-                    return
-                }
-                // if moving left and up
-                if (xDirection === -2 && yDirection === 2) {
-                    // ball moves right and up
-                    xDirection = 2
-                    return
+                        break;
+                    case "userTop":
+                        yDirection = 2
+                        break;
+                    case "block":
+                        if (xyFlip === 0) {
+                            xyFlip = 1
+                            xDirection = xInitial * -1
+                        } else if (xyFlip === 1) {
+                            xyFlip = 0
+                            yDirection = yInitial * -1
+                        }
+                        break;
+                    case "userLeft":
+                        yDirection = 2
+                        xDirection = xInitial * -1
+                        break;
+                    case "userRight":
+                        yDirection = 2
+                        xDirection = xInitial * -1
+                        break;
+                    default:
+                        console.log("unhandled deflection: " + deflected)
+                        break;
                 }
             }
         }
