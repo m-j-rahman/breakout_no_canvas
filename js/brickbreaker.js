@@ -265,29 +265,35 @@ document.addEventListener('keydown', (event) => {
                 let ballRight = ballLeft + ballCollisionWidth;
                 let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
                 let ballTop = ballBottom + ballCollisionHeight;
+
                 //check for block collision
                 for (let i = 0; i < blocks.length; i++) {
-                    let blockLeft = blocks[i].bottomLeft[0] + blockCollisionXOffset;
+                    const j = i;
+                    let blockLeft = blocks[j].bottomLeft[0] + blockCollisionXOffset;
                     let blockRight = blockLeft + blockCollisionWidth;
-                    let blockBottom = blocks[i].bottomLeft[1] + blockCollisionYOffset;
+                    let blockBottom = blocks[j].bottomLeft[1] + blockCollisionYOffset;
                     let blockTop = blockBottom + blockCollisionHeight;
+
                     if (ballTop >= blockBottom || ballBottom >= blockTop) {
-                        if (ballRight > blockLeft && ballLeft < blockRight) {
-                            // if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
-                            let allBlocks = Array.from(document.querySelectorAll('.block'))
-                            allBlocks[i].classList.add('removed')
-                            allBlocks[i].classList.remove('block')
-                            blocks.splice(i, 1)
-                            changeDirection(false, true)
-                            score++
-                            scoreDisplay.innerHTML = "Score: " + score
-                            if (blocks.length === 0) {
-                                playing = false
-                                win = true
-                                restartGame = true
-                                console.log("playing: ", playing, "win: ", win, "reset: ", reset)
-                                document.getElementById('winMenu').style.display = 'block'
-                            }
+                        if (ballRight >= blockLeft && ballLeft <= blockRight) {
+                            // if (ballTop < blockBottom && ballBottom > blockTop) {
+
+                                let allBlocks = Array.from(document.querySelectorAll('.block'))
+                                allBlocks[j].classList.add('removed')
+                                allBlocks[j].classList.remove('block')
+                                blocks.splice(j, 1)
+                                changeDirection(false)
+                                // score display
+                                score++
+                                scoreDisplay.innerHTML = "Score: " + score
+                                // if blocks are all removed, then gameover, user wins
+                                if (blocks.length === 0) {
+                                    playing = false
+                                    win = true
+                                    restartGame = true
+                                    document.getElementById('winMenu').style.display = 'block'
+                                }
+                            // }
                         }
                     }
                 }
@@ -323,7 +329,7 @@ document.addEventListener('keydown', (event) => {
                 }
             }
 
-            function changeDirection(biasUp = false, biasDown = false) {
+            function changeDirection(biasUp = false) {
                 // console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
                 // if moving right and up
                 if (xDirection === 2 && yDirection === 2) {
