@@ -177,18 +177,18 @@ document.addEventListener('keydown', (event) => {
     if (playing === false && restartGame === false) {
         if (event.key === 's') {
             playing = true
-            if (pause === false) {
+            if (pause === false) { // hides menu, and adds event listener for user movement
                 document.getElementById('menu').style.display = 'none'
                 document.addEventListener('keydown', moveUser)
             }
-            //move user
+            //moves user/paddle
             function moveUser(e) {
-                if (reset === true) {
+                if (reset === true) { // resets user to starting position
                     userCurrentPosition = [230, 10]
                     drawUser()
                     document.addEventListener('keydown', moveUser)
                 }
-                if (win || lose) {
+                if (win || lose) { // pauses user movement when win or lose are true
                     document.removeEventListener('keydown', moveUser)
                 }
                 switch (e.key) {
@@ -203,7 +203,7 @@ document.addEventListener('keydown', (event) => {
                         if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
                             userCurrentPosition[0] += 5
                             drawUser()
-                            timerUser = window.requestAnimationFrame(moveUser)
+                            timerUser
                         }
                         break
 
@@ -223,45 +223,40 @@ document.addEventListener('keydown', (event) => {
                         }
                         break
                 }
-                timerUser = window.requestAnimationFrame(moveUser)
+                timerUser
             }
 
             //moves ball
             function moveBall() {
-                if (lose || win) {
+                if (lose || win || pause) {
                     window.cancelAnimationFrame(timerBall)
                 }
-                //pauses ball
-                if (pause) {
-                    window.cancelAnimationFrame(timerBall)
-                    pause = false
-                } else {
-                    // moves ball
-                    if (playing === false) {
+                if (pause === false) {
+                    if (playing === false) {  // resets ball to start position, and cancels ball animation
                         window.cancelAnimationFrame(timerBall)
                         ballCurrentPosition = [270, 40]
                     }
-
-                    // normal movement of the ball
-                    if (reset === false) {
+                    if (reset === false) { // normal movement of the ball when reset and pause are false
                         ballCurrentPosition[0] += xDirection
                         ballCurrentPosition[1] += yDirection
                         drawBall()
                         checkForCollisions()
                         timerBall = window.requestAnimationFrame(moveBall)
-                        // resets the ball to the start position if reset is true
-                    } else if (reset === true) {
+                    } else { // resets the ball to the start position if reset is true
                         ballCurrentPosition = [270, 40]
                         reset = false
                         drawBall()
                         checkForCollisions()
                         timerBall = window.requestAnimationFrame(moveBall)
                     }
+                    //resets pause to false
+                } else {
+                    pause = false
                 }
             }
             timerBall = window.requestAnimationFrame(moveBall)
 
-            //check for collisions
+            //check for ball collisions
             function checkForCollisions() {
                 let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
                 let ballRight = ballLeft + ballCollisionWidth;
@@ -278,8 +273,6 @@ document.addEventListener('keydown', (event) => {
 
                     if (ballTop >= blockBottom || ballBottom >= blockTop) {
                         if (ballRight >= blockLeft && ballLeft <= blockRight) {
-                            // if (ballTop < blockBottom && ballBottom > blockTop) {
-
                             let allBlocks = Array.from(document.querySelectorAll('.block'))
                             allBlocks[j].classList.add('removed')
                             allBlocks[j].classList.remove('block')
@@ -299,13 +292,14 @@ document.addEventListener('keydown', (event) => {
                         }
                     }
                 }
+
                 // check for wall hits
                 if (ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
                     changeDirection("ceiling")
                 } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
                     changeDirection("wall")
                 } else if (ballCurrentPosition[1] === 0) {
-                    // lives and user reset
+                    // lives handled and user position reset to start
                     lives--
                     livesDisplay.innerHTML = "Lives: " + lives
                     userCurrentPosition = [230, 10]
@@ -324,7 +318,6 @@ document.addEventListener('keydown', (event) => {
                 let userRight = userLeft + userCollisionWidth;
                 let userBottom = userCurrentPosition[1] + userCollisionYOffset;
                 let userTop = userBottom + userCollisionHeight;
-
 
                 if (ballBottom < userTop) {
                     if (ballRight > userLeft && ballLeft < userRight) {
