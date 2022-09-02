@@ -1,9 +1,12 @@
 TO DO LIST
 
-- turn all key checks into a big switch case if possible, may be a bit of a pain to refactor
-- make ball start movement random instead of set path
 - centre the grid, title, and menus
 - speed up paddle when the key is initally pressed
+- improve block collision, as it is too sensitive when the ball grazes it
+
+Extras:
+- turn all key checks into a big switch case if possible, may be a bit of a pain to refactor
+- make ball start movement random instead of set path
 - flesh out the scoring system?
     - higher up bricks worth more points
     - combo bonus for more then one brick removed on a single trip
@@ -21,4 +24,3 @@ https://murtada.nl/blog/going-jank-free-achieving-60-fps-smooth-websites
 https://www.gamedev.net/reference/articles/article735.asp 
 
 AUDIT: https://learn.01founders.co/git/root/public/src/branch/master/subjects/make-your-game/audit
-

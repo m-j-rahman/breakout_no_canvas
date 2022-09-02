@@ -3,6 +3,10 @@ const scoreDisplay = document.querySelector('#score')
 const livesDisplay = document.querySelector('#lives')
 const blockWidth = 100
 const blockHeight = 20
+const blockCollisionWidth = blockWidth * 0.80
+const blockCollisionHeight = blockHeight * 0.80
+const blockCollisionXOffset = (blockWidth - blockCollisionWidth) / 2
+const blockCollisionYOffset = (blockHeight - blockCollisionHeight) / 2
 
 const ballDiameter = 20
 const ballRadius = 10
@@ -15,6 +19,8 @@ const ballCollisionYOffset = (ballHeight - ballCollisionHeight) / 2
 
 let xDirection = -2
 let yDirection = 2
+// 0 == flipX | 1 == flipY
+let xyFlip = 0
 
 const boardWidth = 560
 const boardHeight = 300
@@ -39,8 +45,9 @@ let lives = 3;
 let pause = false;
 let reset = false;
 let playing = false;
-let restart = false;
 let lose = false;
+let win = false;
+let restartGame = false;
 
 let count = 0;
 let countCheck = false;
@@ -57,21 +64,21 @@ class Block {
 
 //all my blocks
 let blocks = [
-  new Block(10, 270),
-  new Block(120, 270),
-  new Block(230, 270),
-  new Block(340, 270),
-  new Block(450, 270),
-  new Block(10, 240),
-  new Block(120, 240),
-  new Block(230, 240),
-  new Block(340, 240),
-  new Block(450, 240),
-  new Block(10, 210),
-  new Block(120, 210),
-  new Block(230, 210),
-  new Block(340, 210),
-  new Block(450, 210),
+    new Block(10, 270),
+    new Block(120, 270),
+    new Block(230, 270),
+    new Block(340, 270),
+    new Block(450, 270),
+    new Block(10, 240),
+    new Block(120, 240),
+    new Block(230, 240),
+    new Block(340, 240),
+    new Block(450, 240),
+    new Block(10, 210),
+    new Block(120, 210),
+    new Block(230, 210),
+    new Block(340, 210),
+    new Block(450, 210),
 ];
 
 //draw my blocks
@@ -137,12 +144,12 @@ function drawBall() {
 }
 
 function generateRandomColor() {
-  var letters = "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 function startStopwatch() {
     let time = 0;
@@ -153,33 +160,36 @@ function startStopwatch() {
         }
     }, 1000);
 }
-
 startStopwatch();
+
+//restarts game
+function restart(e) {
+    if (restartGame || !pause) {
+        if (e.key === 'r') {
+            window.location.reload()
+        }
+    }
+}
+document.addEventListener('keydown', restart)
+
 document.addEventListener('keydown', (event) => {
     //starts game
-    if (playing === false && lose === false) {
+    if (playing === false && restartGame === false) {
         if (event.key === 's') {
             playing = true
             if (pause === false) {
                 document.getElementById('menu').style.display = 'none'
                 document.addEventListener('keydown', moveUser)
             }
-            //restarts game
-            function restart(e) {
-                if (playing === false) {
-                    if (e.key === 'r') {
-                        window.location.reload()
-                    }
-                }
-            }
-            document.addEventListener('keydown', restart)
-
             //move user
             function moveUser(e) {
                 if (reset === true) {
                     userCurrentPosition = [230, 10]
                     drawUser()
                     document.addEventListener('keydown', moveUser)
+                }
+                if (win || lose) {
+                    document.removeEventListener('keydown', moveUser)
                 }
                 switch (e.key) {
                     case 'ArrowLeft':
@@ -204,27 +214,21 @@ document.addEventListener('keydown', (event) => {
                             playing = false
                         }
                         if (pause) {
+                            // restartGame = true
                             document.getElementById('menu').style.display = 'block'
                             document.removeEventListener('keydown', moveUser)
                         } else if (pause === false) {
                             document.addEventListener('keydown', moveUser)
                             playing = true
                         }
-                        if (lose) {
-                            playing = false
-                            document.removeEventListener('keydown', moveUser)
-                        }
                         break
                 }
                 timerUser = window.requestAnimationFrame(moveUser)
             }
-            // document.addEventListener('keydown', moveUser)
-            moveUser(event)
 
             //moves ball
             function moveBall() {
-                if (lose) {
-                    console.log("lose")
+                if (lose || win) {
                     window.cancelAnimationFrame(timerBall)
                 }
                 //pauses ball
@@ -237,10 +241,9 @@ document.addEventListener('keydown', (event) => {
                         window.cancelAnimationFrame(timerBall)
                         ballCurrentPosition = [270, 40]
                     }
-                   
+
                     // normal movement of the ball
                     if (reset === false) {
-
                         ballCurrentPosition[0] += xDirection
                         ballCurrentPosition[1] += yDirection
                         drawBall()
@@ -260,28 +263,49 @@ document.addEventListener('keydown', (event) => {
 
             //check for collisions
             function checkForCollisions() {
+                let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
+                let ballRight = ballLeft + ballCollisionWidth;
+                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
+                let ballTop = ballBottom + ballCollisionHeight;
+
                 //check for block collision
                 for (let i = 0; i < blocks.length; i++) {
-                    if ((ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) && ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])) {
-                        let allBlocks = Array.from(document.querySelectorAll('.block'))
-                        allBlocks[i].classList.add('removed')
-                        allBlocks[i].classList.remove('block')
-                        blocks.splice(i, 1)
-                        changeDirection()
-                        score++
-                        scoreDisplay.innerHTML = "Score: " + score
-                        if (blocks.length === 0) {
-                            playing = false
-                            document.getElementById('winMenu').style.display = 'block'
+                    const j = i;
+                    let blockLeft = blocks[j].bottomLeft[0] + blockCollisionXOffset;
+                    let blockRight = blockLeft + blockCollisionWidth;
+                    let blockBottom = blocks[j].bottomLeft[1] + blockCollisionYOffset;
+                    let blockTop = blockBottom + blockCollisionHeight;
+
+                    if (ballTop >= blockBottom || ballBottom >= blockTop) {
+                        if (ballRight >= blockLeft && ballLeft <= blockRight) {
+                            // if (ballTop < blockBottom && ballBottom > blockTop) {
+
+                            let allBlocks = Array.from(document.querySelectorAll('.block'))
+                            allBlocks[j].classList.add('removed')
+                            allBlocks[j].classList.remove('block')
+                            blocks.splice(j, 1)
+                            changeDirection("block")
+                            // score display
+                            score++
+                            scoreDisplay.innerHTML = "Score: " + score
+                            // if blocks are all removed, then gameover, user wins
+                            if (blocks.length === 0) {
+                                playing = false
+                                win = true
+                                restartGame = true
+                                document.getElementById('winMenu').style.display = 'block'
+                            }
+                            // }
                         }
                     }
                 }
                 // check for wall hits
-                if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
-                    changeDirection()
-                }
-                // lives and user reset
-                if (ballCurrentPosition[1] === 0) {
+                if (ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
+                    changeDirection("ceiling")
+                } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
+                    changeDirection("wall")
+                } else if (ballCurrentPosition[1] === 0) {
+                    // lives and user reset
                     lives--
                     livesDisplay.innerHTML = "Lives: " + lives
                     userCurrentPosition = [230, 10]
@@ -290,56 +314,66 @@ document.addEventListener('keydown', (event) => {
                     // game over
                     if (lives === 0) {
                         playing = false
-                        document.getElementById('loseMenu').style.display = 'block'
-                        // reset = true
+                        restartGame = true
                         lose = true
+                        document.getElementById('loseMenu').style.display = 'block'
                     }
                 }
                 //check for user collision
-                let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
-                let ballRight = ballLeft + ballCollisionWidth;
-                let ballTop = ballCurrentPosition[1] + ballCollisionYOffset;
-                let ballBottom = ballTop + ballCollisionHeight;
-
                 let userLeft = userCurrentPosition[0] + userCollisionXOffset;
                 let userRight = userLeft + userCollisionWidth;
-                let userTop = userCurrentPosition[1] + ballCollisionYOffset;
-                let userBottom = userTop + userCollisionHeight;
-                // console.log("ballTop: ", ballTop, "ballBottom: ", ballBottom, "ballRight: ", ballRight, "ballLeft: ", ballLeft)
-                // console.log("userTop: ", userTop, "userBottom: ", userBottom, "userRight: ", userRight, "userLeft: ", userLeft)
-                // console.log("ballX: ", ballCurrentPosition[0], "ballY: ", ballCurrentPosition[1])
-                // console.log("userX: ", userCurrentPosition[0], "userY: ", userCurrentPosition[1])
-                if (ballTop < userBottom) {
-                    // console.log("ballTop: ", ballTop," < userBottom: ", userBottom)
-                    if (ballRight < userLeft) {
-                        // console.log("ballRight: ", ballRight, " < userLeft: ", userLeft)
-                        changeDirection()
-                    }
-                    if (ballLeft < userRight) {
-                        // console.log("ballLeft: ", ballLeft, " < userRight: ", userRight)
-                        changeDirection()
+                let userBottom = userCurrentPosition[1] + userCollisionYOffset;
+                let userTop = userBottom + userCollisionHeight;
+
+
+                if (ballBottom < userTop) {
+                    if (ballRight > userLeft && ballLeft < userRight) {
+                        changeDirection("userTop")
+                        if ((userBottom < ballBottom) && (userTop > ballBottom)) {
+                            if ((userLeft <= ballRight) && (userLeft >= ballLeft)) {
+                                changeDirection("userLeft")
+                            } else if ((userRight <= ballLeft) && (userRight >= ballRight)) {
+                                changeDirection("userRight")
+                            }
+                        }
                     }
                 }
             }
 
-            function changeDirection() {
-                //TODO: add optional variable in argument to ensure when collisions occur the ball goes up or down. So if ball hits paddle on the side the ball always goes up
-                console.log("User: ", userCurrentPosition, "Ball: ", ballCurrentPosition)
-                if (xDirection === 2 && yDirection === 2) {
-                    yDirection = -2
-                    return
-                }
-                if (xDirection === 2 && yDirection === -2) {
-                    xDirection = -2
-                    return
-                }
-                if (xDirection === -2 && yDirection === -2) {
-                    yDirection = 2
-                    return
-                }
-                if (xDirection === -2 && yDirection === 2) {
-                    xDirection = 2
-                    return
+            function changeDirection(deflected = "") {
+                xInitial = xDirection
+                yInitial = yDirection
+
+                switch (deflected) {
+                    case "wall":
+                        xDirection = xInitial * -1
+                        break;
+                    case "ceiling":
+                        yDirection = -2
+                        break;
+                    case "userTop":
+                        yDirection = 2
+                        break;
+                    case "block":
+                        if (xyFlip === 0) {
+                            xyFlip = 1
+                            xDirection = xInitial * -1
+                        } else if (xyFlip === 1) {
+                            xyFlip = 0
+                            yDirection = yInitial * -1
+                        }
+                        break;
+                    case "userLeft":
+                        yDirection = 2
+                        xDirection = xInitial * -1
+                        break;
+                    case "userRight":
+                        yDirection = 2
+                        xDirection = xInitial * -1
+                        break;
+                    default:
+                        console.log("unhandled deflection: " + deflected)
+                        break;
                 }
             }
         }
