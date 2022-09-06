@@ -1,12 +1,100 @@
-const grid = document.querySelector('.grid')
-const scoreDisplay = document.querySelector('#score')
-const livesDisplay = document.querySelector('#lives')
+// 1. Evaluate game state
+// 2. Update the game state based on inputs
+// 3. Draw the next frame based on the result of 2
+// 4. Recurse
+
+// Key components:
+// - Game State 
+//    - everything that isn't about taking inputs or drawing stuff
+//    - ball position/direction/speed + block visibility + user position/direction/speed + pause menu visibility + round timer + lives + win/loss + score
+// - How user inputs happen
+//    - Interrupt driven?
+//    - Queue driven?
+//      - FIFO?
+//      - LastWins?
+// - Drawing
+//    - anything that the user will see counts as drawing
+// - Recursion
+//    - the main game function needs to be able to be called recursively
+
+// game state goes here
+// I am the home of the globals
+let started = false
+let paused = false
+let needRestart = false
+let lastKeyPress = ''
+
+const userStart = [230, 10]
+let userCurrentPosition = userStart
+
+const boardWidth = 560
+const boardHeight = 300
+
 const blockWidth = 100
 const blockHeight = 20
 const blockCollisionWidth = blockWidth * 0.80
 const blockCollisionHeight = blockHeight * 0.80
 const blockCollisionXOffset = (blockWidth - blockCollisionWidth) / 2
 const blockCollisionYOffset = (blockHeight - blockCollisionHeight) / 2
+
+const user = document.createElement("div");
+user.classList.add("user");
+grid.appendChild(user);
+// end -- game state goes here
+
+function updateGameState() {
+    switch (lastKeyPress) {
+    case 'left':
+        if (userCurrentPosition[0] > 0) {
+            userCurrentPosition[0] -= 5
+        }
+    case 'right':
+        if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
+            userCurrentPosition[0] += 5
+        }
+    }
+    // see update for owned concepts
+}
+
+// event listeners go here
+// i contain event listener functions that update the game state out of band
+document.addEventListener('keydown', e => {
+    switch (e.key) {
+        case 's':
+            started = true
+        case 'p':
+            paused = true
+        case 'r':
+            needRestart = true
+        case 'ArrowLeft':
+            lastKeyPress = 'left'
+        case 'ArrowRight':
+            lastKeyPress = 'right'
+        default:
+            console.log('unkown key pressed:' + e.key)
+    }
+})
+// end -- event listeners go here
+
+function draw() {
+    if (started && !paused) {
+        drawUser()
+    }
+    // see draw for owned concepts
+}
+
+function loop() {
+    updateGameState()
+    draw()
+
+    window.requestAnimationFrame(loop)
+}
+window.requestAnimationFrame(loop)
+
+
+const grid = document.querySelector('.grid')
+const scoreDisplay = document.querySelector('#score')
+const livesDisplay = document.querySelector('#lives')
 
 const ballDiameter = 20
 const ballRadius = 10
@@ -19,11 +107,7 @@ const ballCollisionYOffset = (ballHeight - ballCollisionHeight) / 2
 
 let xDirection = -2
 let yDirection = 2
-// 0 == flipX | 1 == flipY
 let xyFlip = 0
-
-const boardWidth = 560
-const boardHeight = 300
 
 let userWidth = 100;
 let userHeight = 20
@@ -31,9 +115,6 @@ const userCollisionWidth = userWidth * 0.80
 const userCollisionHeight = userHeight * 0.80
 const userCollisionXOffset = (userWidth - userCollisionWidth) / 2
 const userCollisionYOffset = (userHeight - userCollisionHeight) / 2
-
-const userStart = [230, 10]
-let userCurrentPosition = userStart
 
 const ballStart = [270, 40];
 let ballCurrentPosition = ballStart;
@@ -105,10 +186,7 @@ function generateRandomColor() {
 }
 
 //add user
-const user = document.createElement("div");
-user.classList.add("user");
-grid.appendChild(user);
-drawUser();
+
 
 //add ball
 const ball = document.createElement("div");
@@ -169,7 +247,7 @@ function moveBall() {
     }
     if (pause === false) {
         if (playing === false) {  // resets ball to start position, and cancels ball animation
-            cancelAnimationFrame(timerBall)
+            cancelAnimationFrame(moveBall)
             ballCurrentPosition = [270, 40]
         }
         if (reset === false) { // normal movement of the ball when reset and pause are false
