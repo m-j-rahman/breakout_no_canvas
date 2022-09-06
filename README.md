@@ -18,3 +18,10 @@ https://murtada.nl/blog/going-jank-free-achieving-60-fps-smooth-websites
 https://www.gamedev.net/reference/articles/article735.asp 
 
 AUDIT: https://learn.01founders.co/git/root/public/src/branch/master/subjects/make-your-game/audit
+
+Performance notes:
+- A frame rate that is as high as possible for smoothness
+- A frame rate that isn't higher than the screen refresh rate
+- A frame rate that doesn't use too much system resources
+
+https://stackoverflow.com/questions/18364175/best-practices-for-reducing-garbage-collector-activity-in-javascript

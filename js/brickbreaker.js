@@ -162,6 +162,150 @@ function startStopwatch() {
 }
 startStopwatch();
 
+//moves ball
+function moveBall() {
+    if (lose || win || pause) {
+        cancelAnimationFrame(moveBall)
+    }
+    if (pause === false) {
+        if (playing === false) {  // resets ball to start position, and cancels ball animation
+            cancelAnimationFrame(timerBall)
+            ballCurrentPosition = [270, 40]
+        }
+        if (reset === false) { // normal movement of the ball when reset and pause are false
+            ballCurrentPosition[0] += xDirection
+            ballCurrentPosition[1] += yDirection
+            drawBall()
+            checkForCollisions()
+            requestAnimationFrame(moveBall)
+        } else { // resets the ball to the start position if reset is true
+            ballCurrentPosition = [270, 40]
+            reset = false
+            drawBall()
+            checkForCollisions()
+            requestAnimationFrame(moveBall)
+        }
+        //resets pause to false
+    } else {
+        pause = false
+    }
+}
+
+
+//check for ball collisions
+function checkForCollisions() {
+    let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
+    let ballRight = ballLeft + ballCollisionWidth;
+    let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
+    let ballTop = ballBottom + ballCollisionHeight;
+
+    //check for block collision
+    for (let i = 0; i < blocks.length; i++) {
+        const j = i;
+        let blockLeft = blocks[j].bottomLeft[0] + blockCollisionXOffset;
+        let blockRight = blockLeft + blockCollisionWidth;
+        let blockBottom = blocks[j].bottomLeft[1] + blockCollisionYOffset;
+        let blockTop = blockBottom + blockCollisionHeight;
+
+        if (ballTop >= blockBottom || ballBottom >= blockTop) {
+            if (ballRight >= blockLeft && ballLeft <= blockRight) {
+                let allBlocks = Array.from(document.querySelectorAll('.block'))
+                allBlocks[j].classList.add('removed')
+                allBlocks[j].classList.remove('block')
+                blocks.splice(j, 1)
+                changeDirection("block")
+                // score display
+                score++
+                scoreDisplay.innerHTML = "Score: " + score
+                // if blocks are all removed, then gameover, user wins
+                if (blocks.length === 0) {
+                    playing = false
+                    win = true
+                    restartGame = true
+                    document.getElementById('winMenu').style.display = 'block'
+                }
+                // }
+            }
+        }
+    }
+
+    // check for wall hits
+    if (ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
+        changeDirection("ceiling")
+    } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
+        changeDirection("wall")
+    } else if (ballCurrentPosition[1] === 0) {
+        // lives handled and user position reset to start
+        lives--
+        livesDisplay.innerHTML = "Lives: " + lives
+        userCurrentPosition = [230, 10]
+        drawUser()
+        reset = true
+        // game over
+        if (lives === 0) {
+            playing = false
+            restartGame = true
+            lose = true
+            document.getElementById('loseMenu').style.display = 'block'
+        }
+    }
+    //check for user collision
+    let userLeft = userCurrentPosition[0] + userCollisionXOffset;
+    let userRight = userLeft + userCollisionWidth;
+    let userBottom = userCurrentPosition[1] + userCollisionYOffset;
+    let userTop = userBottom + userCollisionHeight;
+
+    if (ballBottom < userTop) {
+        if (ballRight > userLeft && ballLeft < userRight) {
+            changeDirection("userTop")
+            if ((userBottom < ballBottom) && (userTop > ballBottom)) {
+                if ((userLeft <= ballRight) && (userLeft >= ballLeft)) {
+                    changeDirection("userLeft")
+                } else if ((userRight <= ballLeft) && (userRight >= ballRight)) {
+                    changeDirection("userRight")
+                }
+            }
+        }
+    }
+}
+
+function changeDirection(deflected = "") {
+    xInitial = xDirection
+    yInitial = yDirection
+
+    switch (deflected) {
+        case "wall":
+            xDirection = xInitial * -1
+            break;
+        case "ceiling":
+            yDirection = -2
+            break;
+        case "userTop":
+            yDirection = 2
+            break;
+        case "block":
+            if (xyFlip === 0) {
+                xyFlip = 1
+                xDirection = xInitial * -1
+            } else if (xyFlip === 1) {
+                xyFlip = 0
+                yDirection = yInitial * -1
+            }
+            break;
+        case "userLeft":
+            yDirection = 2
+            xDirection = xInitial * -1
+            break;
+        case "userRight":
+            yDirection = 2
+            xDirection = xInitial * -1
+            break;
+        default:
+            console.log("unhandled deflection: " + deflected)
+            break;
+    }
+}
+
 //restarts game
 function restart(e) {
     if (restartGame || !pause) {
@@ -196,14 +340,12 @@ document.addEventListener('keydown', (event) => {
                         if (userCurrentPosition[0] > 0) {
                             userCurrentPosition[0] -= 5
                             drawUser()
-                            timerUser = window.requestAnimationFrame(moveUser)
                         }
                         break
                     case 'ArrowRight':
                         if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
                             userCurrentPosition[0] += 5
                             drawUser()
-                            timerUser
                         }
                         break
 
@@ -223,152 +365,12 @@ document.addEventListener('keydown', (event) => {
                         }
                         break
                 }
-                timerUser
             }
 
-            //moves ball
-            function moveBall() {
-                if (lose || win || pause) {
-                    window.cancelAnimationFrame(timerBall)
-                }
-                if (pause === false) {
-                    if (playing === false) {  // resets ball to start position, and cancels ball animation
-                        window.cancelAnimationFrame(timerBall)
-                        ballCurrentPosition = [270, 40]
-                    }
-                    if (reset === false) { // normal movement of the ball when reset and pause are false
-                        ballCurrentPosition[0] += xDirection
-                        ballCurrentPosition[1] += yDirection
-                        drawBall()
-                        checkForCollisions()
-                        timerBall = window.requestAnimationFrame(moveBall)
-                    } else { // resets the ball to the start position if reset is true
-                        ballCurrentPosition = [270, 40]
-                        reset = false
-                        drawBall()
-                        checkForCollisions()
-                        timerBall = window.requestAnimationFrame(moveBall)
-                    }
-                    //resets pause to false
-                } else {
-                    pause = false
-                }
-            }
-            timerBall = window.requestAnimationFrame(moveBall)
-
-            //check for ball collisions
-            function checkForCollisions() {
-                let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
-                let ballRight = ballLeft + ballCollisionWidth;
-                let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
-                let ballTop = ballBottom + ballCollisionHeight;
-
-                //check for block collision
-                for (let i = 0; i < blocks.length; i++) {
-                    const j = i;
-                    let blockLeft = blocks[j].bottomLeft[0] + blockCollisionXOffset;
-                    let blockRight = blockLeft + blockCollisionWidth;
-                    let blockBottom = blocks[j].bottomLeft[1] + blockCollisionYOffset;
-                    let blockTop = blockBottom + blockCollisionHeight;
-
-                    if (ballTop >= blockBottom || ballBottom >= blockTop) {
-                        if (ballRight >= blockLeft && ballLeft <= blockRight) {
-                            let allBlocks = Array.from(document.querySelectorAll('.block'))
-                            allBlocks[j].classList.add('removed')
-                            allBlocks[j].classList.remove('block')
-                            blocks.splice(j, 1)
-                            changeDirection("block")
-                            // score display
-                            score++
-                            scoreDisplay.innerHTML = "Score: " + score
-                            // if blocks are all removed, then gameover, user wins
-                            if (blocks.length === 0) {
-                                playing = false
-                                win = true
-                                restartGame = true
-                                document.getElementById('winMenu').style.display = 'block'
-                            }
-                            // }
-                        }
-                    }
-                }
-
-                // check for wall hits
-                if (ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
-                    changeDirection("ceiling")
-                } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
-                    changeDirection("wall")
-                } else if (ballCurrentPosition[1] === 0) {
-                    // lives handled and user position reset to start
-                    lives--
-                    livesDisplay.innerHTML = "Lives: " + lives
-                    userCurrentPosition = [230, 10]
-                    drawUser()
-                    reset = true
-                    // game over
-                    if (lives === 0) {
-                        playing = false
-                        restartGame = true
-                        lose = true
-                        document.getElementById('loseMenu').style.display = 'block'
-                    }
-                }
-                //check for user collision
-                let userLeft = userCurrentPosition[0] + userCollisionXOffset;
-                let userRight = userLeft + userCollisionWidth;
-                let userBottom = userCurrentPosition[1] + userCollisionYOffset;
-                let userTop = userBottom + userCollisionHeight;
-
-                if (ballBottom < userTop) {
-                    if (ballRight > userLeft && ballLeft < userRight) {
-                        changeDirection("userTop")
-                        if ((userBottom < ballBottom) && (userTop > ballBottom)) {
-                            if ((userLeft <= ballRight) && (userLeft >= ballLeft)) {
-                                changeDirection("userLeft")
-                            } else if ((userRight <= ballLeft) && (userRight >= ballRight)) {
-                                changeDirection("userRight")
-                            }
-                        }
-                    }
-                }
-            }
-
-            function changeDirection(deflected = "") {
-                xInitial = xDirection
-                yInitial = yDirection
-
-                switch (deflected) {
-                    case "wall":
-                        xDirection = xInitial * -1
-                        break;
-                    case "ceiling":
-                        yDirection = -2
-                        break;
-                    case "userTop":
-                        yDirection = 2
-                        break;
-                    case "block":
-                        if (xyFlip === 0) {
-                            xyFlip = 1
-                            xDirection = xInitial * -1
-                        } else if (xyFlip === 1) {
-                            xyFlip = 0
-                            yDirection = yInitial * -1
-                        }
-                        break;
-                    case "userLeft":
-                        yDirection = 2
-                        xDirection = xInitial * -1
-                        break;
-                    case "userRight":
-                        yDirection = 2
-                        xDirection = xInitial * -1
-                        break;
-                    default:
-                        console.log("unhandled deflection: " + deflected)
-                        break;
-                }
-            }
+            moveBall()
+            window.requestAnimationFrame(moveBall)
+            checkForCollisions()
+            changeDirection()
         }
     }
 });
