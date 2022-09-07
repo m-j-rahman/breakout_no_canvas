@@ -1,28 +1,6 @@
-// 1. Evaluate game state
-// 2. Update the game state based on inputs
-// 3. Draw the next frame based on the result of 2
-// 4. Recurse
-
-// Key components:
-// - Game State 
-//    - everything that isn't about taking inputs or drawing stuff
-//    - ball position/direction/speed + block visibility + user position/direction/speed + pause menu visibility + round timer + lives + win/loss + score
-// - How user inputs happen
-//    - Interrupt driven?
-//    - Queue driven?
-//      - FIFO?
-//      - LastWins?
-// - Drawing
-//    - anything that the user will see counts as drawing
-// - Recursion
-//    - the main game function needs to be able to be called recursively
-
-// game state goes here
-// I am the home of the globals
 const grid = document.querySelector('.grid')
 const scoreDisplay = document.querySelector('#score')
 const livesDisplay = document.querySelector('#lives')
-
 
 const ballStart = [270, 40];
 let ballCurrentPosition = ballStart;
@@ -91,7 +69,6 @@ grid.appendChild(winMenu)
 const loseMenu = document.createElement('div')
 loseMenu.classList.add('loseMenu')
 grid.appendChild(loseMenu)
-// end -- game state goes here
 
 //draw User
 function drawUser() {
@@ -310,11 +287,8 @@ function updateGameState() {
         default:
             console.log('unknown game state: ', gameState)
     }
-    // see update for owned concepts
 }
 
-// event listeners go here
-// i contain event listener functions that update the game state out of band
 document.addEventListener('keydown', e => {
     switch (e.key) {
         case 's':
@@ -336,7 +310,6 @@ document.addEventListener('keydown', e => {
             console.log('unknown key pressed: ' + e.key)
     }
 })
-// end -- event listeners go here
 
 function draw() {
     livesDisplay.innerHTML = "Lives: " + lives
@@ -362,8 +335,6 @@ function draw() {
             drawBall()
             break;
     }
-
-    // see draw for owned concepts
 }
 
 function loop() {
