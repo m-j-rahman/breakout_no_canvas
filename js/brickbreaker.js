@@ -19,82 +19,13 @@
 
 // game state goes here
 // I am the home of the globals
-let started = false
-let paused = false
-let needRestart = false
-let lastKeyPress = ''
-
-const userStart = [230, 10]
-let userCurrentPosition = userStart
-
-const boardWidth = 560
-const boardHeight = 300
-
-const blockWidth = 100
-const blockHeight = 20
-const blockCollisionWidth = blockWidth * 0.80
-const blockCollisionHeight = blockHeight * 0.80
-const blockCollisionXOffset = (blockWidth - blockCollisionWidth) / 2
-const blockCollisionYOffset = (blockHeight - blockCollisionHeight) / 2
-
-const user = document.createElement("div");
-user.classList.add("user");
-grid.appendChild(user);
-// end -- game state goes here
-
-function updateGameState() {
-    switch (lastKeyPress) {
-    case 'left':
-        if (userCurrentPosition[0] > 0) {
-            userCurrentPosition[0] -= 5
-        }
-    case 'right':
-        if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
-            userCurrentPosition[0] += 5
-        }
-    }
-    // see update for owned concepts
-}
-
-// event listeners go here
-// i contain event listener functions that update the game state out of band
-document.addEventListener('keydown', e => {
-    switch (e.key) {
-        case 's':
-            started = true
-        case 'p':
-            paused = true
-        case 'r':
-            needRestart = true
-        case 'ArrowLeft':
-            lastKeyPress = 'left'
-        case 'ArrowRight':
-            lastKeyPress = 'right'
-        default:
-            console.log('unkown key pressed:' + e.key)
-    }
-})
-// end -- event listeners go here
-
-function draw() {
-    if (started && !paused) {
-        drawUser()
-    }
-    // see draw for owned concepts
-}
-
-function loop() {
-    updateGameState()
-    draw()
-
-    window.requestAnimationFrame(loop)
-}
-window.requestAnimationFrame(loop)
-
-
 const grid = document.querySelector('.grid')
 const scoreDisplay = document.querySelector('#score')
 const livesDisplay = document.querySelector('#lives')
+
+
+const ballStart = [270, 40];
+let ballCurrentPosition = ballStart;
 
 const ballDiameter = 20
 const ballRadius = 10
@@ -109,6 +40,9 @@ let xDirection = -2
 let yDirection = 2
 let xyFlip = 0
 
+const userStart = [230, 10]
+let userCurrentPosition = userStart
+
 let userWidth = 100;
 let userHeight = 20
 const userCollisionWidth = userWidth * 0.80
@@ -116,22 +50,60 @@ const userCollisionHeight = userHeight * 0.80
 const userCollisionXOffset = (userWidth - userCollisionWidth) / 2
 const userCollisionYOffset = (userHeight - userCollisionHeight) / 2
 
-const ballStart = [270, 40];
-let ballCurrentPosition = ballStart;
+const boardWidth = 560
+const boardHeight = 300
 
-let timerBall;
-let timerUser;
+const blockWidth = 100
+const blockHeight = 20
+const blockCollisionWidth = blockWidth * 0.80
+const blockCollisionHeight = blockHeight * 0.80
+const blockCollisionXOffset = (blockWidth - blockCollisionWidth) / 2
+const blockCollisionYOffset = (blockHeight - blockCollisionHeight) / 2
+
+let gameState = 'initial'
+let lastKeyPress = ''
+
 let score = 0;
 let lives = 3;
-let pause = false;
-let reset = false;
-let playing = false;
-let lose = false;
-let win = false;
-let restartGame = false;
 
-let count = 0;
-let countCheck = false;
+// add user
+const user = document.createElement("div");
+user.classList.add("user");
+grid.appendChild(user);
+
+//add ball
+const ball = document.createElement("div");
+ball.classList.add("ball");
+grid.appendChild(ball);
+
+//add pause menu
+const menu = document.createElement('div')
+menu.classList.add('menu')
+menu.style.display = 'none'
+grid.appendChild(menu)
+
+//add win menu
+const winMenu = document.createElement('div')
+winMenu.classList.add('winMenu')
+grid.appendChild(winMenu)
+
+//add lose menu
+const loseMenu = document.createElement('div')
+loseMenu.classList.add('loseMenu')
+grid.appendChild(loseMenu)
+// end -- game state goes here
+
+//draw User
+function drawUser() {
+    user.style.left = userCurrentPosition[0] + 'px'
+    user.style.bottom = userCurrentPosition[1] + 'px'
+}
+
+//draw Ball
+function drawBall() {
+    ball.style.left = ballCurrentPosition[0] + "px";
+    ball.style.bottom = ballCurrentPosition[1] + "px";
+}
 
 //my block
 class Block {
@@ -173,7 +145,6 @@ function addBlocks() {
         grid.appendChild(block);
     }
 }
-
 addBlocks();
 
 function generateRandomColor() {
@@ -185,90 +156,16 @@ function generateRandomColor() {
     return color;
 }
 
-//add user
-
-
-//add ball
-const ball = document.createElement("div");
-ball.classList.add("ball");
-grid.appendChild(ball);
-drawBall();
-
-//add pause menu
-const menu = document.createElement('div')
-menu.classList.add('menu')
-grid.appendChild(menu)
-
-//add win menu
-const winMenu = document.createElement('div')
-winMenu.classList.add('winMenu')
-grid.appendChild(winMenu)
-
-//add lose menu
-const loseMenu = document.createElement('div')
-loseMenu.classList.add('loseMenu')
-grid.appendChild(loseMenu)
-
-//draw User
-function drawUser() {
-    user.style.left = userCurrentPosition[0] + 'px'
-    user.style.bottom = userCurrentPosition[1] + 'px'
-}
-
-//draw Ball
-function drawBall() {
-    ball.style.left = ballCurrentPosition[0] + "px";
-    ball.style.bottom = ballCurrentPosition[1] + "px";
-}
-
-function generateRandomColor() {
-    var letters = "0123456789ABCDEF";
-    var color = "#";
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
 function startStopwatch() {
     let time = 0;
     let timer = setInterval(function () {
-        if (playing) {
+        if (gameState == 'playing') {
             time++;
             document.getElementById("count").innerHTML = "Timer:" + time + "s";
         }
     }, 1000);
 }
 startStopwatch();
-
-//moves ball
-function moveBall() {
-    if (lose || win || pause) {
-        cancelAnimationFrame(moveBall)
-    }
-    if (pause === false) {
-        if (playing === false) {  // resets ball to start position, and cancels ball animation
-            cancelAnimationFrame(moveBall)
-            ballCurrentPosition = [270, 40]
-        }
-        if (reset === false) { // normal movement of the ball when reset and pause are false
-            ballCurrentPosition[0] += xDirection
-            ballCurrentPosition[1] += yDirection
-            drawBall()
-            checkForCollisions()
-            requestAnimationFrame(moveBall)
-        } else { // resets the ball to the start position if reset is true
-            ballCurrentPosition = [270, 40]
-            reset = false
-            drawBall()
-            checkForCollisions()
-            requestAnimationFrame(moveBall)
-        }
-        //resets pause to false
-    } else {
-        pause = false
-    }
-}
-
 
 //check for ball collisions
 function checkForCollisions() {
@@ -297,12 +194,9 @@ function checkForCollisions() {
                 scoreDisplay.innerHTML = "Score: " + score
                 // if blocks are all removed, then gameover, user wins
                 if (blocks.length === 0) {
-                    playing = false
-                    win = true
-                    restartGame = true
+                    gameState = 'win'
                     document.getElementById('winMenu').style.display = 'block'
                 }
-                // }
             }
         }
     }
@@ -313,18 +207,12 @@ function checkForCollisions() {
     } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
         changeDirection("wall")
     } else if (ballCurrentPosition[1] === 0) {
-        // lives handled and user position reset to start
+        // lives handled
         lives--
-        livesDisplay.innerHTML = "Lives: " + lives
-        userCurrentPosition = [230, 10]
-        drawUser()
-        reset = true
+        gameState = 'reset'
         // game over
         if (lives === 0) {
-            playing = false
-            restartGame = true
-            lose = true
-            document.getElementById('loseMenu').style.display = 'block'
+            gameState = 'lose'
         }
     }
     //check for user collision
@@ -384,71 +272,103 @@ function changeDirection(deflected = "") {
     }
 }
 
-//restarts game
-function restart(e) {
-    if (restartGame || !pause) {
-        if (e.key === 'r') {
+function updateGameState() {
+    switch (gameState) {
+        case 'restart':
+            console.log('restart')
             window.location.reload()
-        }
-    }
-}
-document.addEventListener('keydown', restart)
-
-document.addEventListener('keydown', (event) => {
-    //starts game
-    if (playing === false && restartGame === false) {
-        if (event.key === 's') {
-            playing = true
-            if (pause === false) { // hides menu, and adds event listener for user movement
-                document.getElementById('menu').style.display = 'none'
-                document.addEventListener('keydown', moveUser)
-            }
-            //moves user/paddle
-            function moveUser(e) {
-                if (reset === true) { // resets user to starting position
-                    userCurrentPosition = [230, 10]
-                    drawUser()
-                    document.addEventListener('keydown', moveUser)
-                }
-                if (win || lose) { // pauses user movement when win or lose are true
-                    document.removeEventListener('keydown', moveUser)
-                }
-                switch (e.key) {
-                    case 'ArrowLeft':
-                        if (userCurrentPosition[0] > 0) {
-                            userCurrentPosition[0] -= 5
-                            drawUser()
-                        }
-                        break
-                    case 'ArrowRight':
-                        if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
-                            userCurrentPosition[0] += 5
-                            drawUser()
-                        }
-                        break
-
-                    //pauses user
-                    case 'p':
-                        if (playing) {
-                            pause = true
-                            playing = false
-                        }
-                        if (pause) {
-                            // restartGame = true
-                            document.getElementById('menu').style.display = 'block'
-                            document.removeEventListener('keydown', moveUser)
-                        } else if (pause === false) {
-                            document.addEventListener('keydown', moveUser)
-                            playing = true
-                        }
-                        break
-                }
-            }
-
-            moveBall()
-            window.requestAnimationFrame(moveBall)
+            break;
+        case 'pause':
+            console.log('pause')
+            break;
+        case 'playing':
+            console.log('playing')
+            ballCurrentPosition[0] += xDirection
+            ballCurrentPosition[1] += yDirection
             checkForCollisions()
-            changeDirection()
-        }
+            switch (lastKeyPress) {
+                case 'left':
+                    if (userCurrentPosition[0] > 0) {
+                        userCurrentPosition[0] -= 5
+                    }
+                    break;
+                case 'right':
+                    if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
+                        userCurrentPosition[0] += 5
+                    }
+                    break;
+            }
+            // having this in wrecks performance, need to google about js animation acceleration
+            lastKeyPress = '';
+            break;
+        case 'reset':
+            console.log('reset')
+            userCurrentPosition = [230, 10]
+            ballCurrentPosition = [270, 40]
+            gameState = 'playing'
+            break;
+        default:
+            console.log('unknown game state: ', gameState)
     }
-});
+    // see update for owned concepts
+}
+
+// event listeners go here
+// i contain event listener functions that update the game state out of band
+document.addEventListener('keydown', e => {
+    switch (e.key) {
+        case 's':
+            gameState = 'playing'
+            break;
+        case 'p':
+            gameState = 'pause'
+            break;
+        case 'r':
+            gameState = 'restart'
+            break;
+        case 'ArrowLeft':
+            lastKeyPress = 'left'
+            break;
+        case 'ArrowRight':
+            lastKeyPress = 'right'
+            break;
+        default:
+            console.log('unknown key pressed: ' + e.key)
+    }
+})
+// end -- event listeners go here
+
+function draw() {
+    livesDisplay.innerHTML = "Lives: " + lives
+    switch (gameState) {
+        case 'playing':
+            document.getElementById('loseMenu').style.display = 'none'
+            document.getElementById('winMenu').style.display = 'none'
+            document.getElementById('menu').style.display = 'none'
+            drawUser()
+            drawBall()
+            break;
+        case 'lose':
+            document.getElementById('loseMenu').style.display = 'block'
+            break;
+        case 'win':
+            document.getElementById('winMenu').style.display = 'block'
+            break;
+        case 'pause':
+            document.getElementById('menu').style.display = 'block'
+            break;
+        case 'initial':
+            drawUser()
+            drawBall()
+            break;
+    }
+
+    // see draw for owned concepts
+}
+
+function loop() {
+    updateGameState()
+    draw()
+    window.requestAnimationFrame(loop)
+}
+window.requestAnimationFrame(loop)
