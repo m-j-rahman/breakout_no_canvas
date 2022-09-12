@@ -4,6 +4,8 @@
   height: 300px;
   border: solid 1px rgb(255, 255, 255);
   margin-top: 100px;
+  grid-template-columns: min-content 50%;
+
 }
 
 .block {
@@ -11,10 +13,14 @@
 }
 
 .bg2 {
-  display: grid;
-  grid-template-columns: 33% 33% 33%;
   background-color: black;
   color: white;
+  display: flex;
+	min-height: 100px;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+  
 }
 
 #counters {
