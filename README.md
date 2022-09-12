@@ -15,7 +15,7 @@ The player can only use the keyboard to navigate the game.
     - have a pause menu with a continue and restart option
     - have a score board, with a timer, and lives displayed
     - not use canvas or frameworks
-    - be implemented using plain javascript/DOM and HTML only
+    - be implemented using plain JS/DOM and HTML only
 
 <b><h2 align="center"> AUTHORS: </h2></b>
 
