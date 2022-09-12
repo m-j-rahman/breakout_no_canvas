@@ -254,6 +254,7 @@ function updateGameState() {
         case 'restart':
             console.log('restart')
             window.location.reload()
+            gameState = "initial"
             break;
         case 'pause':
             console.log('pause')
@@ -267,16 +268,19 @@ function updateGameState() {
                 case 'left':
                     if (userCurrentPosition[0] > 0) {
                         userCurrentPosition[0] -= 5
+                        // lastKeyPress = '';
                     }
                     break;
                 case 'right':
                     if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
                         userCurrentPosition[0] += 5
+                        // lastKeyPress = '';
                     }
                     break;
             }
             // having this in wrecks performance, need to google about js animation acceleration
-            lastKeyPress = '';
+            // lastKeyPress = ''; 
+
             break;
         case 'reset':
             console.log('reset')
@@ -305,6 +309,21 @@ document.addEventListener('keydown', e => {
             break;
         case 'ArrowRight':
             lastKeyPress = 'right'
+            break;
+        default:
+            console.log('unknown key pressed: ' + e.key)
+    }
+})
+
+
+document.addEventListener('keyup', e => {
+    switch (e.key) {
+
+        case 'ArrowLeft':
+            lastKeyPress = ''
+            break;
+        case 'ArrowRight':
+            lastKeyPress = ''
             break;
         default:
             console.log('unknown key pressed: ' + e.key)
