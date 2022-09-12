@@ -288,10 +288,14 @@ function updateGameState() {
 document.addEventListener('keydown', e => {
     switch (e.key) {
         case 's':
-            gameState = 'playing'
+            if (gameState !== 'lose' && gameState !== 'win') {
+                gameState = 'playing'
+            }
             break;
         case 'p':
-            gameState = 'pause'
+            if (gameState !== 'lose' && gameState !== 'win') {
+                gameState = 'pause'
+            }
             break;
         case 'r':
             gameState = 'restart'
