@@ -1,27 +1,25 @@
-TO DO LIST
+<b><h1 align="center"> Brick Breaker </h1></b>
 
-- centre the grid, title, and menus
-- speed up paddle when the key is initally pressed
+A recreation of an old classic, [Arkanoid](https://en.wikipedia.org/wiki/Arkanoid).
 
-Extras:
-- turn all key checks and if statements into a big switch case if possible, may be a bit of a pain to refactor
-- make ball start movement random instead of set path
+The objective of the game is to break all the bricks by bouncing the ball with the paddle. 
 
-Dev Tool/Performance tasks
-- no frame drops, FPS must stay at same number
-- FPS 50 - 60
-- run Dev Tool rendering the paint ON, paint must be used very little
-- run Dev Tool rendering the layer ON, layers must be used very little
-- Is layer creation being promoted properly? https://web.dev/stick-to-compositor-only-properties-and-manage-layer-count/
+The player can only use the keyboard to navigate the game. 
 
-https://murtada.nl/blog/going-jank-free-achieving-60-fps-smooth-websites
-https://www.gamedev.net/reference/articles/article735.asp 
+<b><h2 align="center"> REQUIREMENTS: </h2></b>
 
-AUDIT: https://learn.01founders.co/git/root/public/src/branch/master/subjects/make-your-game/audit
+- The game must:
+    - run between 50 FPS - 60 FPS at all times
+    - have no framedrops
+    - make proper use of RequestAnimationFrame
+    - have a pause menu with a continue and restart option
+    - have a score board, with a timer, and lives displayed
+    - not use canvas or frameworks
+    - be implemented using plain JS/DOM and HTML only
 
-Performance notes:
-- A frame rate that is as high as possible for smoothness
-- A frame rate that isn't higher than the screen refresh rate
-- A frame rate that doesn't use too much system resources
+<b><h2 align="center"> AUTHORS: </h2></b>
 
-https://stackoverflow.com/questions/18364175/best-practices-for-reducing-garbage-collector-activity-in-javascript
+<p align="center"> Umair Shah <br>
+Cassidy Hall <br>
+Mohammed Rahman
+</p>

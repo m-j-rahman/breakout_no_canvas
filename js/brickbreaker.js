@@ -254,9 +254,7 @@ function updateGameState() {
         case 'restart':
             console.log('restart')
             window.location.reload()
-            break;
-        case 'pause':
-            console.log('pause')
+            gameState = 'initial'
             break;
         case 'playing':
             console.log('playing')
@@ -275,8 +273,6 @@ function updateGameState() {
                     }
                     break;
             }
-            // having this in wrecks performance, need to google about js animation acceleration
-            lastKeyPress = '';
             break;
         case 'reset':
             console.log('reset')
@@ -307,7 +303,20 @@ document.addEventListener('keydown', e => {
             lastKeyPress = 'right'
             break;
         default:
-            console.log('unknown key pressed: ' + e.key)
+            console.log('unknown keydown pressed: ' + e.key)
+    }
+})
+
+document.addEventListener('keyup', e => {
+    switch (e.key) {
+        case 'ArrowLeft':
+            lastKeyPress = ''
+            break;
+        case 'ArrowRight':
+            lastKeyPress = ''
+            break;
+        default:
+            console.log('unknown keyup pressed: ' + e.key)
     }
 })
 
