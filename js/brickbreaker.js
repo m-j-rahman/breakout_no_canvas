@@ -1,79 +1,76 @@
-const grid = document.querySelector('.grid')
-const scoreDisplay = document.querySelector('#score')
-const livesDisplay = document.querySelector('#lives')
+const GRID = document.querySelector('.grid')
+const SCORE_DISPLAY = document.querySelector('#score')
+const LIVES_DISPLAY = document.querySelector('#lives')
 
-const ballStart = [270, 40];
-let ballCurrentPosition = ballStart;
+const BOARD_WIDTH = 560
+const BOARD_HEIGHT = 300
 
-const ballDiameter = 20
-const ballRadius = 10
-const ballWidth = 20
-const ballHeight = 20
-const ballCollisionWidth = ballWidth * 0.80
-const ballCollisionHeight = ballHeight * 0.80
-const ballCollisionXOffset = (ballWidth - ballCollisionWidth) / 2
-const ballCollisionYOffset = (ballHeight - ballCollisionHeight) / 2
+const BALL_START = [270, 40];
+let ballCurrentPosition = BALL_START;
+const BALL_DIAMETER = 20
+const BALL_RADIUS = 10
+const BALL_WIDTH = 20
+const BALL_HEIGHT = 20
+const BALL_COLLISION_WIDTH = BALL_WIDTH * 0.80
+const BALL_COLLISION_HEIGHT = BALL_HEIGHT * 0.80
+const BALL_COLLISION_X_OFFSET = (BALL_WIDTH - BALL_COLLISION_WIDTH) / 2
+const BALL_COLLISION_Y_OFFSET = (BALL_HEIGHT - BALL_COLLISION_HEIGHT) / 2
 
 let xDirection = -2
 let yDirection = 2
 let xyFlip = 0
 
-const userStart = [230, 10]
-let userCurrentPosition = userStart
+const USER_START = [230, 10]
+let userCurrentPosition = USER_START
+let userWidth = 100;    //variable to allow for changing size with powerups later
+let userHeight = 20     //variable to allow for changing size with powerups later
+const USER_COLLISION_WIDTH = userWidth * 0.80
+const USER_COLLISION_HEIGHT = userHeight * 0.80
+const USER_COLLISION_X_OFFSET = (userWidth - USER_COLLISION_WIDTH) / 2
+const USER_COLLISION_Y_OFFSET = (userHeight - USER_COLLISION_HEIGHT) / 2
 
-let userWidth = 100;
-let userHeight = 20
-const userCollisionWidth = userWidth * 0.80
-const userCollisionHeight = userHeight * 0.80
-const userCollisionXOffset = (userWidth - userCollisionWidth) / 2
-const userCollisionYOffset = (userHeight - userCollisionHeight) / 2
-
-const boardWidth = 560
-const boardHeight = 300
-
-const blockWidth = 100
-const blockHeight = 20
-const blockCollisionWidth = blockWidth * 0.80
-const blockCollisionHeight = blockHeight * 0.80
-const blockCollisionXOffset = (blockWidth - blockCollisionWidth) / 2
-const blockCollisionYOffset = (blockHeight - blockCollisionHeight) / 2
+const BLOCK_WIDTH = 100
+const BLOCK_HEIGHT = 20
+const BLOCK_COLLISION_WIDTH = BLOCK_WIDTH * 0.80
+const BLOCK_COLLISION_HEIGHT = BLOCK_HEIGHT * 0.80
+const BLOCK_COLLISION_X_OFFSET = (BLOCK_WIDTH - BLOCK_COLLISION_WIDTH) / 2
+const BLOCK_COLLISION_Y_OFFSET = (BLOCK_HEIGHT - BLOCK_COLLISION_HEIGHT) / 2
 
 let gameState = 'initial'
 let lastKeyPress = ''
-
 let score = 0;
 let lives = 3;
 
 // add user
-const user = document.createElement("div");
-user.classList.add("user");
-grid.appendChild(user);
+const USER = document.createElement("div");
+USER.classList.add("user");
+GRID.appendChild(USER);
 
 //add ball
 const ball = document.createElement("div");
 ball.classList.add("ball");
-grid.appendChild(ball);
+GRID.appendChild(ball);
 
 //add pause menu
 const menu = document.createElement('div')
 menu.classList.add('menu')
 menu.style.display = 'none'
-grid.appendChild(menu)
+GRID.appendChild(menu)
 
 //add win menu
 const winMenu = document.createElement('div')
 winMenu.classList.add('winMenu')
-grid.appendChild(winMenu)
+GRID.appendChild(winMenu)
 
 //add lose menu
 const loseMenu = document.createElement('div')
 loseMenu.classList.add('loseMenu')
-grid.appendChild(loseMenu)
+GRID.appendChild(loseMenu)
 
 //draw User
 function drawUser() {
-    user.style.left = userCurrentPosition[0] + 'px'
-    user.style.bottom = userCurrentPosition[1] + 'px'
+    USER.style.left = userCurrentPosition[0] + 'px'
+    USER.style.bottom = userCurrentPosition[1] + 'px'
 }
 
 //draw Ball
@@ -86,9 +83,9 @@ function drawBall() {
 class Block {
     constructor(xAxis, yAxis) {
         this.bottomLeft = [xAxis, yAxis];
-        this.bottomRight = [xAxis + blockWidth, yAxis];
-        this.topRight = [xAxis + blockWidth, yAxis + blockHeight];
-        this.topLeft = [xAxis, yAxis + blockHeight];
+        this.bottomRight = [xAxis + BLOCK_WIDTH, yAxis];
+        this.topRight = [xAxis + BLOCK_WIDTH, yAxis + BLOCK_HEIGHT];
+        this.topLeft = [xAxis, yAxis + BLOCK_HEIGHT];
     }
 }
 
@@ -119,7 +116,7 @@ function addBlocks() {
         block.style.left = blocks[i].bottomLeft[0] + "px";
         block.style.bottom = blocks[i].bottomLeft[1] + "px";
         block.style.backgroundColor = generateRandomColor();
-        grid.appendChild(block);
+        GRID.appendChild(block);
     }
 }
 addBlocks();
@@ -146,18 +143,18 @@ startStopwatch();
 
 //check for ball collisions
 function checkForCollisions() {
-    let ballLeft = ballCurrentPosition[0] + ballCollisionXOffset;
-    let ballRight = ballLeft + ballCollisionWidth;
-    let ballBottom = ballCurrentPosition[1] + ballCollisionYOffset;
-    let ballTop = ballBottom + ballCollisionHeight;
+    let ballLeft = ballCurrentPosition[0] + BALL_COLLISION_X_OFFSET;
+    let ballRight = ballLeft + BALL_COLLISION_WIDTH;
+    let ballBottom = ballCurrentPosition[1] + BALL_COLLISION_Y_OFFSET;
+    let ballTop = ballBottom + BALL_COLLISION_HEIGHT;
 
     //check for block collision
     for (let i = 0; i < blocks.length; i++) {
         const j = i;
-        let blockLeft = blocks[j].bottomLeft[0] + blockCollisionXOffset;
-        let blockRight = blockLeft + blockCollisionWidth;
-        let blockBottom = blocks[j].bottomLeft[1] + blockCollisionYOffset;
-        let blockTop = blockBottom + blockCollisionHeight;
+        let blockLeft = blocks[j].bottomLeft[0] + BLOCK_COLLISION_X_OFFSET;
+        let blockRight = blockLeft + BLOCK_COLLISION_WIDTH;
+        let blockBottom = blocks[j].bottomLeft[1] + BLOCK_COLLISION_Y_OFFSET;
+        let blockTop = blockBottom + BLOCK_COLLISION_HEIGHT;
 
         if (ballTop >= blockBottom || ballBottom >= blockTop) {
             if (ballRight >= blockLeft && ballLeft <= blockRight) {
@@ -168,7 +165,7 @@ function checkForCollisions() {
                 changeDirection("block")
                 // score display
                 score++
-                scoreDisplay.innerHTML = "Score: " + score
+                SCORE_DISPLAY.innerHTML = "Score: " + score
                 // if blocks are all removed, then gameover, user wins
                 if (blocks.length === 0) {
                     gameState = 'win'
@@ -179,9 +176,9 @@ function checkForCollisions() {
     }
 
     // check for wall hits
-    if (ballCurrentPosition[1] >= (boardHeight - ballDiameter)) {
+    if (ballCurrentPosition[1] >= (BOARD_HEIGHT - BALL_DIAMETER)) {
         changeDirection("ceiling")
-    } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (boardWidth - ballDiameter)) {
+    } else if (ballCurrentPosition[0] <= 0 || ballCurrentPosition[0] >= (BOARD_WIDTH - BALL_DIAMETER)) {
         changeDirection("wall")
     } else if (ballCurrentPosition[1] === 0) {
         // lives handled
@@ -193,10 +190,10 @@ function checkForCollisions() {
         }
     }
     //check for user collision
-    let userLeft = userCurrentPosition[0] + userCollisionXOffset;
-    let userRight = userLeft + userCollisionWidth;
-    let userBottom = userCurrentPosition[1] + userCollisionYOffset;
-    let userTop = userBottom + userCollisionHeight;
+    let userLeft = userCurrentPosition[0] + USER_COLLISION_X_OFFSET;
+    let userRight = userLeft + USER_COLLISION_WIDTH;
+    let userBottom = userCurrentPosition[1] + USER_COLLISION_Y_OFFSET;
+    let userTop = userBottom + USER_COLLISION_HEIGHT;
 
     if (ballBottom < userTop) {
         if (ballRight > userLeft && ballLeft < userRight) {
@@ -249,6 +246,47 @@ function changeDirection(deflected = "") {
     }
 }
 
+// controls
+document.addEventListener('keydown', e => {
+    switch (e.key) {
+        case 's':
+            if (gameState !== 'lose' && gameState !== 'win') {      //prevents infinite playing in lose and win states
+                gameState = 'playing'
+            }
+            break;
+        case 'p':
+            if (gameState !== 'lose' && gameState !== 'win') {      //prevents infinite playing in lose and win states
+                gameState = 'pause'
+            }
+            break;
+        case 'r':
+            gameState = 'restart'
+            break;
+        case 'ArrowLeft':
+            lastKeyPress = 'left'
+            break;
+        case 'ArrowRight':
+            lastKeyPress = 'right'
+            break;
+        default:
+            console.log('unknown keydown pressed: ' + e.key)
+    }
+})
+
+// stops user moving when key is let go
+document.addEventListener('keyup', e => {
+    switch (e.key) {
+        case 'ArrowLeft':
+            lastKeyPress = ''
+            break;
+        case 'ArrowRight':
+            lastKeyPress = ''
+            break;
+        default:
+            console.log('unknown keyup pressed: ' + e.key)
+    }
+})
+
 function updateGameState() {
     switch (gameState) {
         case 'restart':
@@ -268,7 +306,7 @@ function updateGameState() {
                     }
                     break;
                 case 'right':
-                    if (userCurrentPosition[0] < (boardWidth - blockWidth)) {
+                    if (userCurrentPosition[0] < (BOARD_WIDTH - BLOCK_WIDTH)) {
                         userCurrentPosition[0] += 5
                     }
                     break;
@@ -285,47 +323,8 @@ function updateGameState() {
     }
 }
 
-document.addEventListener('keydown', e => {
-    switch (e.key) {
-        case 's':
-            if (gameState !== 'lose' && gameState !== 'win') {
-                gameState = 'playing'
-            }
-            break;
-        case 'p':
-            if (gameState !== 'lose' && gameState !== 'win') {
-                gameState = 'pause'
-            }
-            break;
-        case 'r':
-            gameState = 'restart'
-            break;
-        case 'ArrowLeft':
-            lastKeyPress = 'left'
-            break;
-        case 'ArrowRight':
-            lastKeyPress = 'right'
-            break;
-        default:
-            console.log('unknown keydown pressed: ' + e.key)
-    }
-})
-
-document.addEventListener('keyup', e => {
-    switch (e.key) {
-        case 'ArrowLeft':
-            lastKeyPress = ''
-            break;
-        case 'ArrowRight':
-            lastKeyPress = ''
-            break;
-        default:
-            console.log('unknown keyup pressed: ' + e.key)
-    }
-})
-
 function draw() {
-    livesDisplay.innerHTML = "Lives: " + lives
+    LIVES_DISPLAY.innerHTML = "Lives: " + lives
     switch (gameState) {
         case 'playing':
             document.getElementById('loseMenu').style.display = 'none'
